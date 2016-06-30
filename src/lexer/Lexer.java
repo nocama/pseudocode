@@ -30,10 +30,6 @@ public class Lexer {
 			if (c == ' ') {
 				pushToken();
 			}
-			else if (isSingle(c)) {
-				pushToken();
-				pushToken(c);
-			}
 			else if (state == WORD && Character.isAlphabetic(c)) {
 				token.append(c);
 			}
@@ -43,6 +39,14 @@ public class Lexer {
 			else if (state == NUMBER && !hasDecimal && c == '.') {
 				token.append(c);
 				hasDecimal = true;
+			}
+			else if (index + 1 < text.length() && isDouble(c, text.charAt(index + 1))) {
+				pushToken();
+				pushToken("" + c + text.charAt(index + 1));
+			}
+			else if (isSingle(c)) {
+				pushToken();
+				pushToken(c);
 			}
 			else {
 				if (Character.isAlphabetic(c)) {
@@ -61,20 +65,28 @@ public class Lexer {
 	}
 	
 	public boolean isSingle(char c) {
-		return c == '\n' || c == '\t' || c == ',';
+		return c == '\n' || c == '\t' || c == ',' || c == '.' || isOperator(c);
+	}
+	
+	public boolean isOperator(char c) {
+		return c == '+' || c == '-' || c == '*' || c == '/';
+	}
+	
+	public boolean isDouble(char c, char d) {
+		return (c == '>' || c == '<') && d == '=';
 	}
 	
 	public void pushToken(char token) {
-		tokens.add("" + token);
+		tokens.add(("" + token).toLowerCase());
 	}
 	
 	public void pushToken(String token) {
-		tokens.add(token);
+		tokens.add(token.toLowerCase());
 	}
 	
 	public void pushToken() {
 		if (token.length() > 0) {
-			tokens.add(token.toString());
+			tokens.add(token.toString().toLowerCase());
 			hasDecimal = false;
 			clearToken();
 		}

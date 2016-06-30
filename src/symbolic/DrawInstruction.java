@@ -4,84 +4,188 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 public class DrawInstruction extends Instruction {
-
-	public static final int CIRCLE = 1;
-	public static final int SQUARE = 2;
-	public static final int OVAL = 3;
-	public static final int RECTANGLE = 4;
 	
-	int type = 0;
-	double x = 0;
-	double y = 0;
-	double width = 50;
-	double height = 50;
+	private static final double DEFAULT_SIZE = 50;
+	
+	private enum Shape {
+		Circle, Square, Oval, Rectangle, Line
+	};
+	
+	Shape type;
+	Expression x;
+	Expression y;
+	Expression width;
+	Expression height;
 	Color color;
 	
+	/**
+	 * Constructs a drawing instruction from the given String description of the shape to be drawn.
+	 * @param name
+	 */
 	public DrawInstruction(String name) {
 		if (name.equals("circle"))
-			type = CIRCLE;
+			type = Shape.Circle;
 		if (name.equals("square"))
-			type = SQUARE;
+			type = Shape.Square;
 		if (name.equals("oval"))
-			type = OVAL;
+			type = Shape.Oval;
 		if (name.equals("rectangle"))
-			type = RECTANGLE;
+			type = Shape.Rectangle;
+		if (name.equals("line"))
+			type = Shape.Line;
 		
 		color = Color.WHITE;
 	}
 	
-	public void setX(double x) {
+	/**
+	 * Sets the center/initial x position of this shape.
+	 * @param x - an Expression object describing the x position 
+	 */
+	public void setX(Expression x) {
 		this.x = x;
 	}
 	
-	public void setY(double y) {
+	/**
+	 * Sets the center/initial y position of this shape.
+	 * @param y - an Expression object describing the y position
+	 */
+	public void setY(Expression y) {
 		this.y = y;
 	}
 	
-	public void setSize(double size) {
+	/**
+	 * For lines only, sets the endpoint's x position of this shape.
+	 * @param x - an Expression object describing the x position of the endpoint
+	 */
+	public void setEndX(Expression x) {
+		this.width = x;
+	}
+	
+	/**
+	 * For lines only, sets the endpoint's y position of this shape.
+	 * @param y - an Expression object describing the y position of the endpoint
+	 */
+	public void setEndY(Expression y) {
+		this.height = y;
+	}
+	
+	/**
+	 * Sets the size of this shape to the given value.
+	 * @param size - an Expression object describing the size of the object
+	 */
+	public void setSize(Expression size) {
 		this.width = size;
 		this.height = size;
 	}
 	
-	public void setRadius(double radius) {
-		this.width = this.height = radius * 2;
+	/**
+	 * Sets the radius of this shape to the given value, assuming it is a circle or oval.
+	 * @param size - an Expression object describing the radius of the object
+	 */
+	public void setRadius(Expression radius) {
+		this.width = this.height = new Expression(radius, Operator.Multiply, new Terminal(2));
 	}
 	
-	public void setDiameter(double diameter) {
+	/**
+	 * Sets the diameter of this shape to the given value, assuming it is a circle or oval.
+	 * @param size - an Expression object describing the diameter of the object
+	 */
+	public void setDiameter(Expression diameter) {
 		this.width = this.height = diameter;
 	}
 	
-	public void setWidth(int width) {
+	/**
+	 * Sets the width of this shape.
+	 * @param x - an Expression object describing the width
+	 */
+	public void setWidth(Expression width) {
 		this.width = width;
 	}
 	
-	public void setHeight(int height) {
+	/**
+	 * Sets the height of this shape.
+	 * @param x - an Expression object describing the height
+	 */
+	public void setHeight(Expression height) {
 		this.height = height;
 	}
 	
+	/**
+	 * Sets the color of this shape.
+	 * @param color - a Color instance describing the color of this shape
+	 */
+	public void setColor(Color color) {
+		this.color = color;
+	}
+	
 	@Override
-	public void paint(Graphics g) {
+	public void paint(Graphics g, Algorithm algorithm) {
+		// Evaluate expressions for this shape
+		double x = (this.x != null) ? this.x.evaluate(algorithm) : 0;
+		double y = (this.y != null) ? this.y.evaluate(algorithm) : 0;
+		double width = (this.width != null) ? this.width.evaluate(algorithm) : DEFAULT_SIZE;
+		double height = (this.height != null) ? this.height.evaluate(algorithm) : DEFAULT_SIZE;
+		
+		// Set the drawing color
 		g.setColor(color);
+		// Draw the corresponding shape.
 		switch (type) {
-		case CIRCLE:
-		case OVAL:
+		case Circle:
+		case Oval:
 			g.fillOval((int) (x - width / 2), (int) (y - height / 2), (int) width, (int) height);
 			break;
-		case SQUARE:
-		case RECTANGLE:
+		case Square:
+		case Rectangle:
 			g.fillRect((int) (x - width / 2), (int) (y - height / 2), (int) width, (int) height);
 			break;
+		case Line:
+			if (x != width || y != height)
+				g.drawLine((int) x, (int) y, (int) width, (int) height);
 		}
 	}
+	
+	@Override
+	public boolean equals(Object instruction) {
+		// Checks if they are draw instructions for the same thing.
+		if (instruction instanceof DrawInstruction) {
+			DrawInstruction other = (DrawInstruction) instruction;
+			if (this.color != other.color)
+				return false;
+			if (this.x != null && ! this.x.equals(other.x))
+				return false;
+			if (this.y != null && ! this.x.equals(other.y))
+				return false;
+			if (this.width != null && ! this.width.equals(other.width))
+				return false;
+			if (this.height != null && ! this.height.equals(other.height))
+				return false;
+			return true;
+		}
+		return false;
+	}
 
+	@Override
 	public String toString() {
 		switch (type) {
-		case CIRCLE: return "draw a circle at (" + x + ", " + y + ") of radius " + width / 2;
-		case SQUARE: return "draw a circle at (" + x + ", " + y + ") of radius " + width / 2;
-		case OVAL: return "draw a circle at (" + x + ", " + y + ") of radius " + width / 2;
-		case RECTANGLE: return "draw a circle at (" + x + ", " + y + ") of radius " + width / 2;
+		case Circle: return "draw a circle at (" + x + ", " + y + ") of diameter " + width;
+		case Square: return "draw a square at (" + x + ", " + y + ") of side length " + width;
+		case Oval: return "draw a oval at (" + x + ", " + y + ") of size " + width + " x " + height;
+		case Rectangle: return "draw a rectangle at (" + x + ", " + y + ") of size " + width + " x " + height;
+		case Line: return "draw a rectangle at (" + x + ", " + y + ") of size " + width + " x " + height;
 		}
 		return "bad instruction";
+	}
+	
+	public boolean isRectangle() {
+		return type == Shape.Rectangle || type == Shape.Square;
+	}
+	
+	public boolean isOval() {
+		return type == Shape.Circle || type == Shape.Oval;
+	}
+
+	public boolean isLine() {
+		return type == Shape.Line;
 	}
 	
 }

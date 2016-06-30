@@ -2,8 +2,11 @@ package symbolic;
 
 import java.awt.Graphics;
 
-public interface Pseudocode {
+public abstract class Pseudocode {
 	
-	public void paint(Graphics g);
+	public abstract void paint(Graphics g, Algorithm algorithm);
+	
+	public void reset() {};
+	public void terminate() {};
 	
 }

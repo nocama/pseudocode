@@ -16,9 +16,7 @@ public class PseudocodeFrame extends JFrame {
 	public static void main(String[] args) { new PseudocodeFrame(); };
 	
 	// Display constants
-	public static final int WIDTH = 1000;
-	public static final int HEIGHT = 600;
-	public static final int EDITOR_WIDTH = 400;
+	public static final int SIZE = 600;
 	
 	// Editor and output panel reference.
 	EditorPanel editor;
@@ -32,7 +30,7 @@ public class PseudocodeFrame extends JFrame {
 	 */
 	public PseudocodeFrame() {
 		super("Pseudocode");
-		setSize(WIDTH, HEIGHT);
+		setSize(SIZE * 2, SIZE + 22);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		// Creates a JPanel to contain the editor and output panel.
@@ -47,6 +45,7 @@ public class PseudocodeFrame extends JFrame {
 		container.add(output);
 		add(container);
 		
+		setResizable(false);
 		setVisible(true);
 	}
 

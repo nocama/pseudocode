@@ -2,6 +2,9 @@ package view;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.JPanel;
 
@@ -11,26 +14,51 @@ public class OutputPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	
 	private Algorithm algorithm;
-
+	private boolean reset = true;
+	
+	private BufferedImage output;
+	
 	public OutputPanel(PseudocodeFrame frame) {
-		setSize(PseudocodeFrame.WIDTH - PseudocodeFrame.EDITOR_WIDTH, PseudocodeFrame.HEIGHT);
+		setSize(frame.getWidth() / 2, frame.getHeight());
+		output = new BufferedImage(frame.getWidth() / 2, frame.getHeight(), BufferedImage.TYPE_INT_RGB);
+		
+		Timer t = new Timer();
+		t.scheduleAtFixedRate(new TimerTask() {
+			@Override
+			public void run() {
+				repaint();
+			}
+			
+		}, 0, 20);
+		setVisible(true);
+		repaint();
 	}
 	
 	public void paint(Graphics g) {
-		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, getWidth(), getHeight());
-		
-		g.setColor(Color.WHITE);
+		if (reset) {
+			output.getGraphics().setColor(Color.BLACK);
+			output.getGraphics().fillRect(0, 0, getWidth(), getHeight());
+			reset = false;
+			g.drawImage(output, 0, 0, null);
+		}
 		if (algorithm != null) {
-			algorithm.paint(g);
+			algorithm.paint(output.getGraphics(), algorithm);
+			g.drawImage(output, 0, 0, null);
 		}
 	}
 
 	public void update(Algorithm algorithm) {
-		algorithm.execute();
-		System.out.println(algorithm);
+		// Cancel repaint for same algorithm
+		//if (this.algorithm != null && this.algorithm.equals(algorithm))
+		//	return;
+		
+		algorithm.reset();
 		this.algorithm = algorithm;
+		System.out.println(algorithm);
+		reset = true;
+		
 		repaint();
+		
 	}
 	
 }
