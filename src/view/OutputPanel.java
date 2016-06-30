@@ -54,7 +54,7 @@ public class OutputPanel extends JPanel {
 		
 		algorithm.reset();
 		this.algorithm = algorithm;
-		System.out.println(algorithm);
+		//System.out.println(algorithm);
 		reset = true;
 		
 		repaint();

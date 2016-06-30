@@ -34,7 +34,7 @@ public class DrawInstruction extends Instruction {
 		if (name.equals("line"))
 			type = Shape.Line;
 		
-		color = Color.WHITE;
+		color = Color.BLACK;
 	}
 	
 	/**
@@ -125,6 +125,8 @@ public class DrawInstruction extends Instruction {
 		double y = (this.y != null) ? this.y.evaluate(algorithm) : 0;
 		double width = (this.width != null) ? this.width.evaluate(algorithm) : DEFAULT_SIZE;
 		double height = (this.height != null) ? this.height.evaluate(algorithm) : DEFAULT_SIZE;
+		
+		System.out.println("At " + x + ", " + y);
 		
 		// Set the drawing color
 		g.setColor(color);
