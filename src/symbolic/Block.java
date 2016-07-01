@@ -13,14 +13,23 @@ import view.PseudocodeFrame;
  * @author  Keshav Saharia
  * 			keshav@techlabeducation.com
  */
-public class Algorithm extends Pseudocode {
+public class Block extends Pseudocode {
+	private Block parent;
 	private ArrayList <Instruction> instructions;
 	private HashMap <String, Double> symbol; 
 	private int programCounter = 0;
 	
-	public Algorithm() {
+	public Block() {
+		this(null);
+	}
+	
+	public Block(Block parent) {
+		this.parent = parent;
 		instructions = new ArrayList <Instruction> ();
-		symbol = new HashMap <String, Double> ();
+		if (parent == null)
+			symbol = new HashMap <String, Double> ();
+		else
+			symbol = parent.symbol;
 		programCounter = 0;
 	}
 	
@@ -36,9 +45,10 @@ public class Algorithm extends Pseudocode {
 		return this.symbol.get(symbol);
 	}
 	
-	public void putSymbol(String symbol, Expression value) {
-		this.symbol.put(symbol, value.evaluate(this));
-		System.out.println(symbol + " -> " + this.symbol.get(symbol));
+	public void assign(String symbol, Expression value) {
+		this.symbol.put(symbol, value.evaluate((parent != null) ? parent : this));
+		
+		System.out.println(symbol + " is now " + this.symbol.get(symbol));
 	}
 	
 	public void reset() {
@@ -56,7 +66,7 @@ public class Algorithm extends Pseudocode {
 	}
 
 	@Override
-	public void paint(Graphics g, Algorithm algorithm) {
+	public void paint(Graphics g, Block algorithm) {
 		if (! isComplete()) {
 			if (currentInstruction().shouldExecute()) {
 				currentInstruction().paint(g, algorithm);
@@ -83,8 +93,8 @@ public class Algorithm extends Pseudocode {
 	}
 	
 	public boolean equals(Object algorithm) {
-		if (algorithm instanceof Algorithm) {
-			Algorithm other = (Algorithm) algorithm;
+		if (algorithm instanceof Block) {
+			Block other = (Block) algorithm;
 			if (this.instructions.size() != other.instructions.size())
 				return false;
 			

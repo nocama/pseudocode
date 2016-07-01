@@ -13,8 +13,8 @@ public class AssignInstruction extends Instruction {
 	}
 
 	@Override
-	public void paint(Graphics g, Algorithm algorithm) {
-		algorithm.putSymbol(symbol.getName(), expression);
+	public void paint(Graphics g, Block algorithm) {
+		algorithm.assign(symbol.getName(), expression);
 	}
 	
 }

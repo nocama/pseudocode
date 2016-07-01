@@ -26,7 +26,7 @@ public class Terminal extends Expression {
 	}
 	
 	@Override
-	public double evaluate(Algorithm algorithm) {
+	public double evaluate(Block algorithm) {
 		return value;
 	}
 	

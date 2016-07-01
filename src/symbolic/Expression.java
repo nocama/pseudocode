@@ -64,7 +64,7 @@ public class Expression {
 		}
 	}
 	
-	public double evaluate(Algorithm algorithm) {
+	public double evaluate(Block algorithm) {
 		if (left != null) {
 			if (operator != null) {
 				// Check for unary operator (only "not")

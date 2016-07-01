@@ -14,7 +14,7 @@ public class BackgroundInstruction extends Instruction {
 	Color color;
 	
 	public BackgroundInstruction() {
-		color = Color.BLACK;
+		color = Color.WHITE;
 	}
 	
 	public void setColor(Color color) {
@@ -22,7 +22,7 @@ public class BackgroundInstruction extends Instruction {
 	}
 	
 	@Override
-	public void paint(Graphics g, Algorithm algorithm) {
+	public void paint(Graphics g, Block algorithm) {
 		g.setColor(color);
 		g.fillRect(0, 0, 1000, 1000);
 	}

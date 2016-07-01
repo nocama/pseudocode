@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.util.HashSet;
 
 import lexer.Lexer;
-import symbolic.Algorithm;
+import symbolic.Block;
 import symbolic.AssignInstruction;
 import symbolic.BackgroundInstruction;
 import symbolic.DrawInstruction;
@@ -17,7 +17,7 @@ import symbolic.Symbol;
 import symbolic.Terminal;
 
 /**
- * The Parser generates an Algorithm object from a given pseudocode String.
+ * The Parser generates an object representation of a runnable pseudocode program described by a String.
  * 
  * @author  Keshav Saharia
  *			keshav@techlabeducation.com
@@ -28,6 +28,8 @@ public class Parser {
 	private String[] tokens;			// an array of string tokens that this parser has lexed
 	private int index = 0;				// the current index of the parser in the token stream
 	private HashSet <String> symbols;	// The HashSet containing all symbol names
+	
+	private Block algorithm;			// Reference to the algorithm currently being parsed.
 	
 	private String[] drawType = { "circle", "square", "rectangle", "oval", "line" };
 	
@@ -40,29 +42,36 @@ public class Parser {
 	}
 	
 	/**
-	 * Parses the text and returns an algorithm object representing a runnable pseudocode program.
+	 * Parses the text and returns a Block object representing a runnable pseudocode program.
 	 * @param text
 	 * @return
 	 */
-	public Algorithm parse(String text) {
+	public Block parse(String text) {
 		// Lex the input text and reset the parser
 		tokens = lexer.lex(text);
 		index = 0;
 		symbols.clear();
 		
 		// Start the high-level parsing routine
-		return parseAlgorithm();
+		return parseBlock(null);
 	}
 
 	/**
 	 * Highest level of the recursive descent parser. Parses an algorithm and returns an
-	 * Algorithm object representing the parsed algorithm.
+	 * Block object representing the parsed algorithm.
 	 * 
-	 * @return an Algorithm object representing the pseudocode algorithm
+	 * @return a Block object representing the pseudocode algorithm
 	 */
-	private Algorithm parseAlgorithm() {
+	private Block parseBlock(Block parent) {
 		// Create an algorithm and store it to the object reference
-		Algorithm algorithm = new Algorithm();
+		Block block = null;
+		
+		// Create a root block or attach to the root block
+		if (parent == null) {
+			block = new Block();
+			algorithm = block;
+		}
+		else block = new Block(algorithm);
 		
 		// While there are tokens left in the token stream, parse an instruction from the token stream
 		while (hasNext()) {
@@ -70,14 +79,14 @@ public class Parser {
 			
 			// If an instruction was successfully parsed
 			if (instruction != null) {
-				algorithm.add(instruction);
+				block.add(instruction);
 			}
 			// Otherwise skip the current token so the stream is gradually consumed
 			else skipNext();
 		}
 		
 		// Return the resulting algorithm object
-		return algorithm;
+		return block;
 	}
 	
 	/**
@@ -88,21 +97,21 @@ public class Parser {
 		
 		// Repeat instructions forever
 		if (getNext("forever")) {
-			return new ForeverInstruction(parseAlgorithm());
+			return new ForeverInstruction(parseBlock(algorithm));
 		}
 		
 		// Set the background instruction
-		if (getNext("set background")) {
+		else if (getNext("set background", "set the background")) {
 			return parseBackgroundInstruction();
 		}
 		
 		// Draw a shape instruction
-		if (getNext("draw", "create", "place")) {
+		else if (getNext("draw", "create", "place")) {
 			return parseDrawInstruction();
 		}
 		
 		// Put keyword can be used for drawing or for assigning to a symbol
-		if (getNext("put")) {
+		else if (getNext("put")) {
 			skipNext("a", "an");
 			
 			// Put in the context of a drawing instruction
@@ -121,7 +130,7 @@ public class Parser {
 		}
 		
 		// The set keyword 
-		if (getNext("set")) {
+		else if (getNext("set")) {
 			if (peekSymbol()) {
 				Symbol symbol = parseSymbol();
 				if (getNext("to", "as") && peekExpression()) {
@@ -131,7 +140,7 @@ public class Parser {
 		}
 		
 		// Increment, decrement, change
-		if (peekNext("increment", "decrement", "change")) {
+		else if (peekNext("increment", "decrement", "change")) {
 			// The direction in which the change will happen (increment and change are both positive)
 			int direction = (getNext().equals("decrement")) ? -1 : 1;
 			
@@ -150,7 +159,7 @@ public class Parser {
 	}
 	
 	private Instruction parseBackgroundInstruction() {
-		getNext("to");
+		getNext("to", "as");
 		Color color = parseColor();
 		
 		BackgroundInstruction background = new BackgroundInstruction();
@@ -269,6 +278,10 @@ public class Parser {
 		return null;
 	}
 	
+	/**
+	 * Parses an operator.
+	 * @return
+	 */
 	private Operator parseOperator() {
 		// Math operators
 		if (getNext("+")  || getNext("plus")) return Operator.Add;
@@ -341,24 +354,47 @@ public class Parser {
 		return head;
 	}
 	
+	/**
+	 * Returns true if there is a valid symbol after thi
+	 * @return
+	 */
 	private boolean peekSymbol() {
 		return peekNext().matches("[a-zA-Z][a-zA-Z0-9\\_]*");
 	}
 	
+	/**
+	 * Returns true if an existing symbol that the parser has already encountered is the next token
+	 * in the input stream.
+	 * @return
+	 */
 	private boolean peekExistingSymbol() {
 		return peekSymbol() && symbols.contains(peekNext());
 	}
 	
+	/**
+	 * Parses a symbol from the input stream and returns a Symbol object that represents it.
+	 * @return a Symbol object representing the next symbol in the input stream.
+	 */
 	private Symbol parseSymbol() {
 		String symbolName = getNext();
 		symbols.add(symbolName);
 		return new Symbol(symbolName);
 	}
 	
+	/**
+	 * Returns true if the next token can be parsed as a terminal.
+	 * @return true if the next token is a terminal, false otherwise.
+	 */
 	private boolean peekTerminal() {
 		return peekNext().matches("\\d+(|\\.\\d*)");
 	}
 	
+	/**
+	 * Returns a Terminal object representing the next terminal value (currently only for numbers)
+	 * in the token input stream.
+	 * 
+	 * @return a Terminal object representing the next token as a number
+	 */
 	private Terminal parseTerminal() {
 		String next = getNext();
 		try {
@@ -369,6 +405,13 @@ public class Parser {
 		}
 	}
 	
+	/**
+	 * Returns true if any of the given Strings match the tokens at the current
+	 * index in the input stream.
+	 * 
+	 * @param matches - any number of Strings to match
+	 * @return true if there was a match, false otherwise
+	 */
 	private boolean peekNext(String ... matches) {
 		for (String match : matches) {
 			if (peekNext(match)) {
@@ -378,6 +421,13 @@ public class Parser {
 		return false;
 	}
 	
+	/**
+	 * Returns true if any of the given Strings match the tokens at the current index
+	 * in the input stream, and moves the index to the tokens after the first match.
+	 * 
+	 * @param matches - any number of Strings to match
+	 * @return true if there was a match, false otherwise 
+	 */
 	private boolean getNext(String ... matches) {
 		for (String match : matches) {
 			if (peekNext(match)) {
@@ -391,10 +441,21 @@ public class Parser {
 		return false;
 	}
 	
+	/**
+	 * Skips the next matches in the input stream.
+	 * @param matches - any number of Strings to ignore.
+	 */
 	private void skipNext(String ... matches) {
 		getNext(matches);
 	}
 	
+	/**
+	 * Returns true if the String match occurs in the next tokens in the input stream.
+	 * @param match - a String match that may contain spaces containing the tokens 
+	 * 				  to match against the input stream at the current position
+	 * 
+	 * @return true if the match occurs in the next tokens, false otherwise
+	 */
 	private boolean peekNext(String match) {
 		if (match.indexOf(' ') > 0) {
 			String[] parts = match.split(" ");
@@ -409,12 +470,20 @@ public class Parser {
 		else return false;
 	}
 	
+	/**
+	 * Returns the next token in the input stream without moving to the next token.
+	 * @return the next token in the token stream
+	 */
 	private String peekNext() {
 		if (index < tokens.length)
 			return tokens[index];
 		else return "";
 	}
 	
+	/**
+	 * Gets the next token from the input stream and updates the current token index to the next token.
+	 * @return the next token in the token stream
+	 */
 	private String getNext() {
 		if (index < tokens.length) {
 			String t = tokens[index];
@@ -424,14 +493,24 @@ public class Parser {
 		else return "";
 	}
 	
+	/**
+	 * Skips the next token in the input stream.
+	 */
 	private void skipNext() {
 		index++;
 	}
 	
+	/**
+	 * Returns true if the parser has another token in its input stream.
+	 * @return
+	 */
 	private boolean hasNext() {
 		return index < tokens.length;
 	}
 	
+	/**
+	 * Returns true if the parser is currently at a delimiter.
+	 */
 	private boolean atDelimiter() {
 		return index >= tokens.length || tokens[index].equals("\n") || tokens[index].equals(".");
 	}

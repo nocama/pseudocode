@@ -119,12 +119,17 @@ public class DrawInstruction extends Instruction {
 	}
 	
 	@Override
-	public void paint(Graphics g, Algorithm algorithm) {
+	public void paint(Graphics g, Block algorithm) {
+		System.out.println("Drawing");
 		// Evaluate expressions for this shape
 		double x = (this.x != null) ? this.x.evaluate(algorithm) : 0;
 		double y = (this.y != null) ? this.y.evaluate(algorithm) : 0;
 		double width = (this.width != null) ? this.width.evaluate(algorithm) : DEFAULT_SIZE;
 		double height = (this.height != null) ? this.height.evaluate(algorithm) : DEFAULT_SIZE;
+		
+		if (this.x instanceof Symbol) {
+			System.out.println("x is a symbol");
+		}
 		
 		System.out.println("At " + x + ", " + y);
 		

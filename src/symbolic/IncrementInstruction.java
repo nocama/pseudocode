@@ -16,8 +16,8 @@ public class IncrementInstruction extends Instruction {
 		this.change = change;
 	}
 	
-	public void execute(Algorithm algorithm) {
-		algorithm.putSymbol(symbol.getName(), new Terminal(algorithm.getSymbol(symbol.getName()) + change.evaluate(algorithm)));
+	public void execute(Block algorithm) {
+		algorithm.assign(symbol.getName(), new Terminal(algorithm.getSymbol(symbol.getName()) + change.evaluate(algorithm)));
 	}
 	
 	public String toString() {

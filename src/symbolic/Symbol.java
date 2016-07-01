@@ -7,7 +7,7 @@ public class Symbol extends Expression {
 		this.symbol = symbol;
 	}
 	
-	public double evaluate(Algorithm algorithm) {
+	public double evaluate(Block algorithm) {
 		if (algorithm.hasSymbol(symbol))
 			return algorithm.getSymbol(symbol);
 		return 0;

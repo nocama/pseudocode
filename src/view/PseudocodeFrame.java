@@ -5,7 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import parser.Parser;
-import symbolic.Algorithm;
+import symbolic.Block;
 
 public class PseudocodeFrame extends JFrame {
 	private static final long serialVersionUID = 1L;
