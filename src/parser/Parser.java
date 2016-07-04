@@ -3,30 +3,41 @@ package parser;
 import java.awt.Color;
 import java.util.HashSet;
 
-import ast.*;
-import lexer.Lexer;
+import expression.*;
+import instruction.*;
 
 /**
  * The Parser generates an object representation of a runnable pseudocode program described by a String.
  * 
  * @author  Keshav Saharia
  *			keshav@techlabeducation.com
+ *
+ * @license MIT
  */
 public class Parser {
 
 	private Lexer lexer;				// the Lexer object for lexing the input text
 	private String[] tokens;			// an array of string tokens that this parser has lexed
 	private int index = 0;				// the current index of the parser in the token stream
-	private HashSet <String> symbols;	// The HashSet containing all symbol names
+	private Block rootBlock;			// The root block being parsed
 
-	private String[] drawType = { "circle", "square", "rectangle", "oval", "line" };
-
+	// The list of shapes that can be drawn.
+	private String[] drawType = { "circle", "square", "rectangle", "oval", "line", "background" };
+	private static HashSet <String> reservedWords;
+	
 	/**
 	 * Constructs the Parser object.
 	 */
 	public Parser() {
 		lexer = new Lexer();
-		symbols = new HashSet <String> ();
+		if (reservedWords == null) {
+			reservedWords = new HashSet <String> ();
+			reservedWords.add("width");
+			reservedWords.add("height");
+			reservedWords.add("mousex");
+			reservedWords.add("mousey");
+			reservedWords.add("mouseclicked");
+		}
 	}
 
 	/**
@@ -38,7 +49,6 @@ public class Parser {
 		// Lex the input text and reset the parser
 		tokens = lexer.lex(text);
 		index = 0;
-		symbols.clear();
 
 		// Start the high-level parsing routine
 		return parseBlock(null);
@@ -53,6 +63,8 @@ public class Parser {
 	private Block parseBlock(Block parent) {
 		// Create an algorithm and store it to the object reference
 		Block block = new Block(parent);
+		if (parent == null)
+			rootBlock = block;
 
 		// While there are tokens left in the token stream, parse an instruction from the token stream
 		while (hasNext()) {
@@ -66,8 +78,6 @@ public class Parser {
 			else while (getNext("\t"));
 			
 			Instruction instruction = parseInstruction(block);
-			
-			//System.out.println(instruction);
 			
 			// If an instruction was successfully parsed
 			if (instruction != null) {
@@ -92,27 +102,32 @@ public class Parser {
 		if (getNext("forever"))
 			return new Forever(parseBlock(block));
 		
+		// Parse an if statement
 		else if (getNext("if") && peekExpression()) {
-			Expression condition = parseExpression();
-			if (condition != null) {
-				System.out.println("Branch: " + condition.toString());
-				Block ifBlock = parseBlock(block);
-				return new Branch(condition, ifBlock);
-			}
+			return parseIfCondition(block);
 		}
 		
+		// Parse an else-if or else statement
+		else if (getNext("else", "otherwise")) {
+			if (getNext("if") && peekExpression())
+				return parseElseIfCondition(block);
+			else
+				return new ElseBlock(parseBlock(block));
+		}
+		
+		// Prints a given value to the standard output.
 		else if (getNext("print") && peekExpression()) {
 			return parsePrintInstruction();
 		}
 
-		// Set the background instruction
+		// Sets the background to the given color
 		else if (getNext("set background", "set the background")) {
-			return parseBackgroundInstruction();
+			return parseBackground();
 		}
 
-		// Draw a shape instruction
+		// Draw a shape on the screen
 		else if (getNext("draw", "create", "place")) {
-			return parseDrawInstruction();
+			return parseDraw();
 		}
 
 		// Put keyword can be used for drawing or for assigning to a symbol
@@ -121,7 +136,7 @@ public class Parser {
 
 			// Put in the context of a drawing instruction
 			if (peekNext(drawType))
-				return parseDrawInstruction();
+				return parseDraw();
 
 			// Checks if there is an expression
 			else if (peekExpression()) {
@@ -152,6 +167,24 @@ public class Parser {
 		return null;
 	}
 	
+	private Instruction parseElseIfCondition(Block parentBlock) {
+		Expression condition = parseExpression();
+		if (condition != null) {
+			Block elseIfBlock = parseBlock(parentBlock);
+			return new ElseIfBlock(condition, elseIfBlock);
+		}
+		return null;
+	}
+
+	private Instruction parseIfCondition(Block parentBlock) {
+		Expression condition = parseExpression();
+		if (condition != null) {
+			Block ifBlock = parseBlock(parentBlock);
+			return new IfBlock(condition, ifBlock);
+		}
+		return null;
+	}
+
 	private Instruction parsePrintInstruction() {
 		Expression expression = parseExpression();
 		if (expression != null) {
@@ -180,7 +213,11 @@ public class Parser {
 		return null;
 	}
 
-	private Instruction parseBackgroundInstruction() {
+	/**
+	 * Parses an instruction to set the background color.
+	 * @return the Instruction object representing a background draw
+	 */
+	private Instruction parseBackground() {
 		getNext("to", "as");
 		Color color = parseColor();
 
@@ -191,34 +228,58 @@ public class Parser {
 		return background;
 	}
 
-	private Instruction parseDrawInstruction() {
-		// Skip the keyword "a" and "an"
+	/**
+	 * Parses a drawing command instruction.
+	 * @return an Instruction object representing the drawing command.
+	 */
+	private Instruction parseDraw() {
+		// Caches size input for later
+		Terminal size = null;
+		
 		skipNext("a", "an");
+		
+		if (getNext("big"))
+			size = Constants.BIG;
+		if (getNext("small"))
+			size = Constants.SMALL;
+		
+		// Try parsing a color
 		Color color = parseColor();
-
+		// Keep looking for a drawing type until the end of the current instruction
 		while (! atDelimiter() && ! peekNext(drawType))
 			skipNext();
-
+		
+		if (getNext("background")) {
+			return parseBackground();
+		}
+		
 		// Any of the standard shapes should produce a draw instruction
-		if (peekNext(drawType)) {
+		else if (peekNext(drawType)) {
 			Draw draw = new Draw(getNext());
 
 			if (color != null)
 				draw.setColor(color);
+			
+			if (size != null)
+				draw.setSize(size);
 
+			// If drawing a line
 			if (draw.isLine()) {
-				if (getNext("from")) {
+				// First get the from coordinate
+				if (getNext("from", "going from", "starting at", "starting from")) {
 					if (peekExpression()) draw.setX(parseExpression());
 					skipNext(",");
 					if (peekExpression()) draw.setY(parseExpression());
-
-					if (getNext("to")) {
+					
+					// Then get the "to" coordinate
+					if (getNext("to", "upto", "ending at", "and going to")) {
 						if (peekExpression()) draw.setEndX(parseExpression());
 						skipNext(",");
 						if (peekExpression()) draw.setEndY(parseExpression());
 					}
 				}
 			}
+			
 			else while (peekNext("at", "with") && ! atDelimiter()) {
 				// Set the coordinates with the "at" keyword
 				if (getNext("at")) {
@@ -229,11 +290,12 @@ public class Parser {
 					if (peekExpression()) draw.setY(parseExpression());
 				}
 				// Set properties with the "with" keyword
-				while (getNext("with")) {
+				else while (getNext("with")) {
 					// Keep parsing properties
 					while (peekNext("width", "height", "radius", "size", "diameter")) {
 						// If the next token is setting the width
 						if (getNext("width")) {
+							skipNext("of");
 							if (peekExpression())
 								draw.setWidth(parseExpression());
 							else if (getNext("and height") && peekExpression())
@@ -242,6 +304,7 @@ public class Parser {
 						}
 						// If the next token is setting the height
 						else if (getNext("height")) {
+							skipNext("of");
 							if (peekExpression())
 								draw.setHeight(parseExpression());
 							else if (getNext("and width") && peekExpression())
@@ -249,22 +312,26 @@ public class Parser {
 						}
 						// If the next token is setting the radius
 						else if (getNext("radius")) {
+							skipNext("of");
 							if (peekExpression())
 								draw.setRadius(parseExpression());
 						}
 						// If the next token is setting the diameter
 						else if (getNext("diameter")) {
+							skipNext("of");
 							if (peekExpression())
 								draw.setDiameter(parseExpression());
 						}
 						// If the next token is setting the general size parameter.
 						else if (getNext("size")) {
+							skipNext("of");
 							if (peekExpression())
 								draw.setSize(parseExpression());
 						}
 						// Skip and tokens between phrases
 						skipNext("and");
 						skipNext("with");
+						skipNext("a");
 					}
 
 					// Skip and tokens and keep trying to check for "and with" instructions
@@ -283,6 +350,26 @@ public class Parser {
 	 * @return
 	 */
 	private Color parseColor() {
+		if (peekNext().startsWith("#") && peekNext().length() == 7 && 
+			peekNext().matches("\\#[0-9a-f]+")) {
+			
+			// Parse hex code
+		}
+		
+		// Try 1 word colors
+		System.out.println(peekNext());
+		System.out.println(peekNext(2));
+		if (RGB.hasColor(peekNext())) {
+			System.out.println("Has " + peekNext());
+			return RGB.getColor(getNext());
+		}
+		// Try 2 word colors
+		else if (RGB.hasColor(peekNext(2))) {
+			System.out.println("Has " + peekNext(2));
+			return RGB.getColor(getNext() + getNext());
+		}
+		
+		// Standard RGB colors
 		if (getNext("red")) return Color.RED;
 		if (getNext("blue")) return Color.BLUE;
 		if (getNext("yellow")) return Color.YELLOW;
@@ -328,10 +415,20 @@ public class Parser {
 	}
 
 	private boolean peekExpression() {
-		return peekTerminal() || peekNext("(", ")") || peekExistingSymbol();
+		return peekTerminal() || peekNext("(", ")") || peekExistingSymbol() || peekNext("mouse");
 	}
 
 	private Expression parseExpression() {
+		if (getNext("mouse")) {
+			if (getNext("x"))
+				return new Symbol("mousex");
+			else if (getNext("y"))
+				return new Symbol("mousey");
+			else if (getNext("clicked"))
+				return new Symbol("mouseclicked");
+			else
+				return new Symbol("mouseclicked");
+		}
 		if (getNext("("))
 			return parseExpression();
 		else {
@@ -401,7 +498,7 @@ public class Parser {
 	 * @return
 	 */
 	private boolean peekExistingSymbol() {
-		return peekSymbol() && symbols.contains(peekNext());
+		return peekSymbol() && (rootBlock.hasSymbol(peekNext()) || reservedWords.contains(peekNext()));
 	}
 
 	/**
@@ -410,7 +507,7 @@ public class Parser {
 	 */
 	private Symbol parseSymbol() {
 		String symbolName = getNext();
-		symbols.add(symbolName);
+		rootBlock.assign(symbolName, new Terminal(0));
 		return new Symbol(symbolName);
 	}
 
@@ -420,7 +517,7 @@ public class Parser {
 	 */
 	private boolean peekTerminal() {
 		return peekNext().matches("\\d+(|\\.\\d*)") ||
-			   peekNext().equals("-") && peekNext(1).matches("\\d+(|\\.\\d*)");
+			   (index + 1 < tokens.length && peekNext().equals("-") && tokens[index + 1].matches("\\d+(|\\.\\d*)"));
 	}
 
 	/**
@@ -455,6 +552,16 @@ public class Parser {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Returns the next n tokens in the input stream.
+	 */
+	private String peekNext(int n) {
+		String next = "";
+		for (int i = 0 ; i < n && index + i < tokens.length ; i++)
+			next += tokens[index + i] + " ";
+		return next.trim();
 	}
 
 	/**
@@ -516,15 +623,7 @@ public class Parser {
 		else return "";
 	}
 	
-	/**
-	 * Returns the token at the given offset from the current token position.
-	 * @return the next token in the token stream
-	 */
-	private String peekNext(int offset) {
-		if (index + offset < tokens.length)
-			return tokens[index + offset];
-		else return "";
-	}
+	
 
 	/**
 	 * Gets the next token from the input stream and updates the current token index to the next token.
@@ -544,13 +643,6 @@ public class Parser {
 	 */
 	private void skipNext() {
 		index++;
-	}
-	
-	/**
-	 * Goes backward in the token stream (only for extreme circumstances).
-	 */
-	private void goBack(int amount) {
-		index -= amount;
 	}
 
 	/**

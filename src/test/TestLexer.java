@@ -6,9 +6,9 @@ import java.io.PrintStream;
 
 import org.junit.Test;
 
-import ast.Expression;
-import ast.Terminal;
-import lexer.Lexer;
+import expression.Expression;
+import expression.Terminal;
+import parser.Lexer;
 
 public class TestLexer {
 
@@ -29,7 +29,27 @@ public class TestLexer {
 		assertTrue(test("-5 ", "-", "5"));
 		assertTrue(test("1-5", "1", "-", "5"));
 		assertTrue(test("1 + 2 * 3-4", "1", "+", "2", "*", "3", "-", "4"));
-		assertTrue(test("draw a circle at", "draw", "a", "circle", "at"));
+		assertTrue(test("draw a circle at 100, 200", "draw", "a", "circle", "at", "100", ",", "200"));
+		//assertTrue(test("draw a circle at", "draw", "a", "circle", "at"));
+	}
+	
+	@Test
+	public void testStringLex() {
+		assertTrue(test("\"foo\"", "\"foo\""));
+		assertTrue(test("\"foo\" + \"bar\"", "\"foo\"", "+", "\"bar\""));
+		assertTrue(test("print \"hello\" at 300, 300", "print", "\"hello\"", "at", "300", ",", "300"));
+		assertTrue(test("print \"hello world\" at 300, 300", "print", "\"hello world\"", "at", "300", ",", "300"));
+		assertTrue(test("print \"hello world here is a \\\"string quote\" at 300, 300", "print", "\"hello world here is a \"string quote\"", "at", "300", ",", "300"));
+		//assertTrue(test("draw a circle at", "draw", "a", "circle", "at"));
+	}
+	
+	@Test
+	public void testMultiLineLex() {
+		assertTrue(test("foo bar\nbaz quux", "foo", "bar", "\n", "baz", "quux"));
+		assertTrue(test("foo bar\n\tbaz quux", "foo", "bar", "\n", "\t", "baz", "quux"));
+		assertTrue(test("foo bar\n\t\tbaz quux", "foo", "bar", "\n", "\t", "\t", "baz", "quux"));
+		assertTrue(test("foo bar\n\t\tbaz quux\nbar", "foo", "bar", "\n", "\t", "\t", "baz", "quux", "\n", "bar"));
+		//assertTrue(test("draw a circle at", "draw", "a", "circle", "at"));
 	}
 	
 	public boolean test(String ... lex) {
@@ -49,6 +69,7 @@ public class TestLexer {
 					return false;
 				}
 			}
+			//System.out.println("PASS: " + lex[0]);
 		}
 		
 		return true;

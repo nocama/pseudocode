@@ -31,7 +31,9 @@ public class EditorPanel extends JPanel implements KeyListener {
 		// Create a text area in a scroll pane 
 		area = new JTextPane();
 		area.setFont(new Font("Monaco", 0, 16));
-		JScrollPane pane = new JScrollPane(area);
+		JPanel areaPanel = new JPanel( new BorderLayout() );
+		areaPanel.add(area);
+		JScrollPane pane = new JScrollPane(areaPanel);
 		area.addKeyListener(this);
 		add(pane);
 	}

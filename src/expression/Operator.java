@@ -1,4 +1,4 @@
-package ast;
+package expression;
 
 public enum Operator {
 	Add,

@@ -1,5 +1,15 @@
-package ast;
+package expression;
 
+import instruction.Block;
+
+/**
+ * An Expression object represents a mathematical expression.
+ * 
+ * @author  Keshav Saharia
+ * 			keshav@techlabeducation.com
+ * 
+ * @license MIT
+ */
 public class Expression {
 	private Expression left;
 	private Operator operator;
@@ -116,18 +126,24 @@ public class Expression {
 		return "";
 	}
 	
-	public boolean equals(Object expression) {
-		if (expression instanceof Expression) {
-			Expression other = (Expression) expression;
-			if (left != null) {
-				if (operator != null)
-					return left.equals(other.left) && 
-						   operator == other.operator && 
-						  (right == null || right.equals(other.right));
-				else return left.equals(other.left);
-			}
-			return false;
+	/**
+	 * Returns true if this expression is equivalent to another expression.
+	 * @param other
+	 * @return
+	 */
+	public boolean equals(Expression other) {
+		// If there is an initial expression value.
+		if (left != null) {
+			// If there is an operator in this expression, check equivalence of the entire expression.
+			if (operator != null)
+				return left.equals(other.left) && 
+					   operator == other.operator && 
+					  ((right == null && other.right == null) || right.equals(other.right));
+			
+			// Otherwise check equivalence of the single sub-expression
+			else return left.equals(other.left);
 		}
+		// Return false if this is a null expression
 		return false;
 	}
 }

@@ -1,7 +1,11 @@
-package ast;
+package instruction;
 
 import java.awt.Color;
 import java.awt.Graphics;
+
+import expression.Expression;
+import expression.Operator;
+import expression.Terminal;
 
 public class Draw extends Instruction {
 	
@@ -119,7 +123,7 @@ public class Draw extends Instruction {
 	}
 	
 	@Override
-	public void paint(Graphics g, Block algorithm) {
+	public void execute(Graphics g, Block algorithm) {
 		// Evaluate expressions for this shape
 		double x = (this.x != null) ? this.x.evaluate(algorithm) : 0;
 		double y = (this.y != null) ? this.y.evaluate(algorithm) : 0;
@@ -145,7 +149,7 @@ public class Draw extends Instruction {
 	}
 	
 	@Override
-	public boolean equals(Object instruction) {
+	public boolean equals(Instruction instruction, Block block) {
 		// Checks if they are draw instructions for the same thing.
 		if (instruction instanceof Draw) {
 			Draw other = (Draw) instruction;
