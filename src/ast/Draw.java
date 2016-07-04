@@ -1,9 +1,9 @@
-package symbolic;
+package ast;
 
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class DrawInstruction extends Instruction {
+public class Draw extends Instruction {
 	
 	private static final double DEFAULT_SIZE = 50;
 	
@@ -22,7 +22,7 @@ public class DrawInstruction extends Instruction {
 	 * Constructs a drawing instruction from the given String description of the shape to be drawn.
 	 * @param name
 	 */
-	public DrawInstruction(String name) {
+	public Draw(String name) {
 		if (name.equals("circle"))
 			type = Shape.Circle;
 		if (name.equals("square"))
@@ -120,18 +120,11 @@ public class DrawInstruction extends Instruction {
 	
 	@Override
 	public void paint(Graphics g, Block algorithm) {
-		System.out.println("Drawing");
 		// Evaluate expressions for this shape
 		double x = (this.x != null) ? this.x.evaluate(algorithm) : 0;
 		double y = (this.y != null) ? this.y.evaluate(algorithm) : 0;
 		double width = (this.width != null) ? this.width.evaluate(algorithm) : DEFAULT_SIZE;
 		double height = (this.height != null) ? this.height.evaluate(algorithm) : DEFAULT_SIZE;
-		
-		if (this.x instanceof Symbol) {
-			System.out.println("x is a symbol");
-		}
-		
-		System.out.println("At " + x + ", " + y);
 		
 		// Set the drawing color
 		g.setColor(color);
@@ -154,8 +147,8 @@ public class DrawInstruction extends Instruction {
 	@Override
 	public boolean equals(Object instruction) {
 		// Checks if they are draw instructions for the same thing.
-		if (instruction instanceof DrawInstruction) {
-			DrawInstruction other = (DrawInstruction) instruction;
+		if (instruction instanceof Draw) {
+			Draw other = (Draw) instruction;
 			if (this.color != other.color)
 				return false;
 			if (this.x != null && ! this.x.equals(other.x))

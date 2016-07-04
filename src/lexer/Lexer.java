@@ -13,11 +13,19 @@ public class Lexer {
 	// For number parsing.
 	boolean hasDecimal = false;
 	
+	/**
+	 * Creates the lexer.
+	 */
 	public Lexer() {
 		tokens = new ArrayList <String> ();
 		token = new StringBuilder();
 	}
 	
+	/**
+	 * 
+	 * @param text
+	 * @return
+	 */
 	public String[] lex(String text) {
 		tokens.clear();
 		
@@ -40,6 +48,11 @@ public class Lexer {
 				token.append(c);
 				hasDecimal = true;
 			}
+			// Negative numbers
+//			else if (index + 1 < text.length() && c == '-' && Character.isDigit(text.charAt(index + 1))) {
+//				token.append(c);
+//				state = NUMBER;
+//			}
 			else if (index + 1 < text.length() && isDouble(c, text.charAt(index + 1))) {
 				pushToken();
 				pushToken("" + c + text.charAt(index + 1));
@@ -69,7 +82,7 @@ public class Lexer {
 	}
 	
 	public boolean isOperator(char c) {
-		return c == '+' || c == '-' || c == '*' || c == '/';
+		return c == '+' || c == '-' || c == '*' || c == '/' || c == '<' || c == '>';
 	}
 	
 	public boolean isDouble(char c, char d) {

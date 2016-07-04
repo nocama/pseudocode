@@ -1,13 +1,13 @@
-package symbolic;
+package ast;
 
 import java.awt.Graphics;
 
-public class ForeverInstruction extends Instruction {
+public class Forever extends Instruction {
 	
 	Block block;
 	Thread repaintThread;
 	
-	public ForeverInstruction(Block block) {
+	public Forever(Block block) {
 		this.block = block;
 	}
 	
@@ -28,5 +28,9 @@ public class ForeverInstruction extends Instruction {
 	public void terminate() {
 		if (repaintThread != null)
 			repaintThread.interrupt();
+	}
+	
+	public String toString() {
+		return "forever " + block.toString();
 	}
 }

@@ -1,4 +1,4 @@
-package symbolic;
+package ast;
 
 public class Symbol extends Expression {
 	private String symbol;
@@ -7,10 +7,8 @@ public class Symbol extends Expression {
 		this.symbol = symbol;
 	}
 	
-	public double evaluate(Block algorithm) {
-		if (algorithm.hasSymbol(symbol))
-			return algorithm.getSymbol(symbol);
-		return 0;
+	public double evaluate(Block block) {
+		return block.get(this);
 	}
 	
 	@Override

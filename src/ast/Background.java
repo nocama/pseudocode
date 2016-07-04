@@ -1,4 +1,4 @@
-package symbolic;
+package ast;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -9,11 +9,11 @@ import java.awt.Graphics;
  * @author  Keshav Saharia
  * 			keshav@techlabeducation.com
  */
-public class BackgroundInstruction extends Instruction {
+public class Background extends Instruction {
 
 	Color color;
 	
-	public BackgroundInstruction() {
+	public Background() {
 		color = Color.WHITE;
 	}
 	
@@ -29,14 +29,14 @@ public class BackgroundInstruction extends Instruction {
 	
 	@Override
 	public boolean equals(Object instruction) {
-		if (instruction instanceof BackgroundInstruction) {
-			BackgroundInstruction other = (BackgroundInstruction) instruction;
+		if (instruction instanceof Background) {
+			Background other = (Background) instruction;
 			return other.color == this.color;
 		}
 		return false;
 	}
 	
 	public String toString() {
-		return "Set background";
+		return "background(" + color + ")";
 	}
 }

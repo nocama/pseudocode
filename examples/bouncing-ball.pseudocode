@@ -1,0 +1,24 @@
+set x to 300
+set y to 300
+set dx to 5
+set dy to 3
+
+forever
+	set the background to white
+	draw a red circle at x, y with radius 50
+	
+	change x by dx
+	change y by dy
+	
+	if x > 550
+		set dx to -1 * dx
+	
+	if y > 550
+		set dy to -1 * dy
+	
+	if x < 50
+		set dx to -1 * dx
+	
+	if y < 50
+		set dy to -1 * dy
+	

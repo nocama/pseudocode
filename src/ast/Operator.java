@@ -1,4 +1,4 @@
-package symbolic;
+package ast;
 
 public enum Operator {
 	Add,

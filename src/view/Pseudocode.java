@@ -4,16 +4,16 @@ import java.awt.GridLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import ast.Block;
 import parser.Parser;
-import symbolic.Block;
 
-public class PseudocodeFrame extends JFrame {
+public class Pseudocode extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create an instance of this JFrame on execution.
 	 */
-	public static void main(String[] args) { new PseudocodeFrame(); };
+	public static void main(String[] args) { new Pseudocode(); };
 	
 	// Display constants
 	public static final int SIZE = 600;
@@ -28,10 +28,11 @@ public class PseudocodeFrame extends JFrame {
 	/**
 	 * Constructs this pseudocode editor.
 	 */
-	public PseudocodeFrame() {
+	public Pseudocode() {
 		super("Pseudocode");
 		setSize(SIZE * 2, SIZE + 22);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setJMenuBar(new PseudocodeMenuBar(this));
 		
 		// Creates a JPanel to contain the editor and output panel.
 		JPanel container = new JPanel();

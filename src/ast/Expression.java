@@ -1,4 +1,4 @@
-package symbolic;
+package ast;
 
 public class Expression {
 	private Expression left;

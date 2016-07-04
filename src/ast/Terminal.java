@@ -1,4 +1,4 @@
-package symbolic;
+package ast;
 
 public class Terminal extends Expression {
 	
@@ -9,7 +9,7 @@ public class Terminal extends Expression {
 	 * Constructs a terminal object with the default value of 0.
 	 */
 	public Terminal() {
-		value = 0;
+		this(0);
 	}
 	
 	/**

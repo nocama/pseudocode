@@ -15,13 +15,13 @@ public class EditorPanel extends JPanel implements KeyListener {
 	
 	// References to the text area and parent frame.
 	private JTextPane area;
-	private PseudocodeFrame pseudocode;
+	private Pseudocode pseudocode;
 	
 	/**
 	 * Constructs the editor.
 	 * @param pseudocode
 	 */
-	public EditorPanel(PseudocodeFrame pseudocode) {
+	public EditorPanel(Pseudocode pseudocode) {
 		this.pseudocode = pseudocode;
 		
 		// Set the size and layout manager for this panel.
