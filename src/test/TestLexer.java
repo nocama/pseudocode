@@ -34,6 +34,12 @@ public class TestLexer {
 	}
 	
 	@Test
+	public void testBranchLex() {
+		assertTrue(test("if x < 1\n\tprint x", "if", "x", "<", "1", "\n", "\t", "print", "x"));
+		//assertTrue(test("draw a circle at", "draw", "a", "circle", "at"));
+	}
+	
+	@Test
 	public void testStringLex() {
 		assertTrue(test("\"foo\"", "\"foo\""));
 		assertTrue(test("\"foo\" + \"bar\"", "\"foo\"", "+", "\"bar\""));

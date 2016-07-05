@@ -11,7 +11,7 @@ import instruction.Block;
  * 
  * @license MIT
  */
-public class Symbol extends Expression {
+public class SymbolTerminal extends Terminal {
 	// Stores the String representation of this symbol.
 	private String symbol;
 	
@@ -19,7 +19,7 @@ public class Symbol extends Expression {
 	 * Creates a Symbol object with the given name.
 	 * @param symbol
 	 */
-	public Symbol(String symbol) {
+	public SymbolTerminal(String symbol) {
 		this.symbol = symbol;
 	}
 	

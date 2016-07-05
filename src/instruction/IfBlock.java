@@ -5,12 +5,27 @@ import java.awt.Graphics;
 import expression.Expression;
 import expression.Terminal;
 
+/**
+ * Represents an if statement and its corresponding block in a pseudocode program. 
+ * 
+ * @author  Keshav Saharia
+ * 			keshav@techlabeducation.com
+ * 
+ * @license MIT
+ */
 public class IfBlock extends Instruction {
 	
 	Expression expression;	// The expression that controls whether this block executes
 	Terminal evaluated; 	// Caches the last evaluated value for the expression
-	Block block;			// The block of instructions 
-
+	Block block;			// The block of instructions
+	
+	/**
+	 * Constructs an IfBlock object that conditionally performs the given block based on 
+	 * the result of the given expression.
+	 * 
+	 * @param expression - the expression controlling the if
+	 * @param block - the block to be performed if the expression evaluates to a positive number
+	 */
 	public IfBlock(Expression expression, Block block) {
 		this.expression = expression;
 		this.evaluated = new Terminal();
@@ -32,6 +47,13 @@ public class IfBlock extends Instruction {
 	 */
 	public boolean shouldExecute(Block rootBlock) {
 		evaluated.setValue(expression.evaluate(rootBlock));
+		return evaluated.getValue() >= 1;
+	}
+	
+	/**
+	 * Returns true if in the last test of execution, this block executed.
+	 */
+	public boolean didExecute() {
 		return evaluated.getValue() >= 1;
 	}
 	

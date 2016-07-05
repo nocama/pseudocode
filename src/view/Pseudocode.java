@@ -12,6 +12,14 @@ import javax.swing.JPanel;
 import instruction.Block;
 import parser.Parser;
 
+/**
+ * 
+ * 
+ * @author  Keshav Saharia
+ * 			keshav@techlabeducation.com
+ *
+ * @license MIT
+ */
 public class Pseudocode extends JFrame {
 	private static final long serialVersionUID = 1L;
 
@@ -36,7 +44,7 @@ public class Pseudocode extends JFrame {
 	 */
 	public Pseudocode() {
 		super("Pseudocode");
-		setSize(SIZE * 2, SIZE + 44);
+		setSize(SIZE * 2, SIZE + 50);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setJMenuBar(new PseudocodeMenuBar(this));
 		
@@ -77,6 +85,11 @@ public class Pseudocode extends JFrame {
 	public void update(String text) {
 		parsed = parser.parse(text);
 		output.update(parsed);
+	}
+	
+	public void updateText(String text) {
+		editor.updateText(text);
+		update(text);
 	}
 	
 }

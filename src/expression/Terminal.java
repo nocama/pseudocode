@@ -13,7 +13,7 @@ import instruction.Block;
 public class Terminal extends Expression {
 	
 	// The underlying value of this terminal expression
-	private double value;
+	private double value = 0;
 	
 	/**
 	 * Constructs a terminal object with the default value of 0.
@@ -44,6 +44,21 @@ public class Terminal extends Expression {
 	 */
 	public double getValue() {
 		return this.value;
+	}
+	
+	/**
+	 * Get the value of this terminal as a string.
+	 */
+	public String getStringValue() {
+		return "" + this.value;
+	}
+	
+	/**
+	 * Overridden by a subtype that is a string.
+	 * @return false by default, true by StringTerminals 
+	 */
+	public boolean isString() {
+		return false;
 	}
 	
 	/**

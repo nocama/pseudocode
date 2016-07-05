@@ -4,28 +4,53 @@ import java.awt.Graphics;
 
 import expression.Expression;
 import expression.Operator;
-import expression.Symbol;
+import expression.SymbolTerminal;
 import expression.Terminal;
 
+/**
+ * Represents an instruction that increments/decrements a variable by the numeric
+ * result of a certain expression.
+ * 
+ * @author  Keshav Saharia
+ * 			keshav@techlabeducation.com
+ * 
+ * @license MIT
+ */
 public class Increment extends Instruction {
 
-	Symbol symbol;
+	// The variable being incremented/decremented
+	SymbolTerminal symbol;
+	// The change in the variable (default is 1)
 	Expression change = new Terminal(1);
 	
-	public Increment(Symbol symbol) {
+	/**
+	 * Constructs an increment instruction for the given symbol.
+	 * @param symbol
+	 */
+	public Increment(SymbolTerminal symbol) {
 		this.symbol = symbol;
 	}
 	
-	public Increment(Symbol symbol, Expression change) {
+	/**
+	 * Increments the given symbol by the value of the given expression.
+	 * @param symbol - the symbol to increment
+	 * @param change - the expression describing how the symbol should change
+	 */
+	public Increment(SymbolTerminal symbol, Expression change) {
 		this.symbol = symbol;
 		this.change = change;
 	}
 	
+	/**
+	 * Returns the String representation of this instruction.
+	 */
 	public String toString() {
 		return symbol.toString() + " += " + change.toString() + ";";
 	}
 
-	@Override
+	/**
+	 * Executes this increment instruction.
+	 */
 	public void execute(Graphics graphics, Block block) {
 		block.assign(symbol, new Expression(symbol, Operator.Add, change));
 	}

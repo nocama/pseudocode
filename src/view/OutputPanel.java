@@ -22,6 +22,8 @@ import instruction.Block;
  * 
  * @author  Keshav Saharia
  * 			keshav@techlabeducation.com
+ *
+ * @license MIT
  */
 public class OutputPanel extends JPanel implements MouseListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L;
@@ -29,6 +31,7 @@ public class OutputPanel extends JPanel implements MouseListener, MouseMotionLis
 	// The underlying algorithm being run by this output view.
 	private Block block;
 	// Flag for resetting the output view.
+	private boolean firstReset = true;
 	private boolean reset = true;
 	private boolean alwaysRepaint = true;
 	private boolean printBlock = true;
@@ -61,11 +64,12 @@ public class OutputPanel extends JPanel implements MouseListener, MouseMotionLis
 			}
 		}, 0, 20);
 
-		// 
-		setVisible(true);
+		// Add mouse and key listeners
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		repaint();
+		
+		// Make the output frame visible
+		setVisible(true);
 	}
 
 	public void setSize(int width, int height) {
@@ -79,30 +83,37 @@ public class OutputPanel extends JPanel implements MouseListener, MouseMotionLis
 	/**
 	 * Resets the buffers and double buffering.
 	 */
-	public void reset() {
+	public void reset(Graphics g) {
 		// Reset the graphics buffers to white
 		front.getGraphics().setColor(Color.WHITE);
 		front.getGraphics().fillRect(0, 0, getWidth(), getHeight());
 		back.getGraphics().setColor(Color.WHITE);
 		back.getGraphics().fillRect(0, 0, getWidth(), getHeight());
-
-		System.out.println(getWidth() + " x " + getHeight());
-
+		
 		frontBuffer = true;
+		g.drawImage(front, 0, 0, null);
 	}
 
 	public void paint(Graphics g) {
+		if (firstReset) {
+			firstReset = false;
+			g.setColor(Color.WHITE);
+			g.fillRect(0, 0, getWidth(), getHeight());
+		}
 		if (reset) {
 			reset = false;
-			reset();
+			reset(g);
 			//g.drawImage(front, 0, 0, null);
 		}
 		if (block != null) {
-			((frontBuffer) ? back : front).getGraphics()
-			.drawImage(((frontBuffer) ? front : back), 0, 0, null);
+			// Get references to current buffer to draw on, and static buffer with previously drawn frame.
+			BufferedImage currentBuffer = (frontBuffer) ? back : front;
+			BufferedImage staticBuffer = (frontBuffer) ? front : back;
+			
+			currentBuffer.getGraphics().drawImage(staticBuffer, 0, 0, null);
 
-			block.execute(((frontBuffer) ? back : front).getGraphics(), block);
-			g.drawImage(((frontBuffer) ? back : front), 0, 0, null);
+			block.execute(currentBuffer.getGraphics(), block);
+			g.drawImage(currentBuffer, 0, 0, null);
 
 			frontBuffer = ! frontBuffer;			
 		}
@@ -118,7 +129,7 @@ public class OutputPanel extends JPanel implements MouseListener, MouseMotionLis
 
 		// Assign the width and height values to the block.
 		block.assign("width", new Terminal(getWidth()));
-		block.assign("height", new Terminal(getHeight()));
+		block.assign("height", new Terminal(getHeight() - 50));
 		block.assign("mousex", mouseX);
 		block.assign("mousey", mouseY);
 		block.assign("mouseclicked", mouseClicked);
@@ -168,7 +179,6 @@ public class OutputPanel extends JPanel implements MouseListener, MouseMotionLis
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		System.out.println("release");
 		mouseClicked.setValue(0);
 		if (block != null)
 			block.assign("mouseclicked", mouseClicked);

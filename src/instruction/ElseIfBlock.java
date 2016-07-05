@@ -4,11 +4,16 @@ import java.awt.Graphics;
 
 import expression.Expression;
 
-public class ElseIfBlock extends Instruction {
+/**
+ * Represents an else if statement and its corresponding block in a pseudocode program. 
+ * 
+ * @author  Keshav Saharia
+ * 			keshav@techlabeducation.com
+ * 
+ * @license MIT
+ */
+public class ElseIfBlock extends IfBlock {
 	
-	Expression expression;
-	Block block;
-
 	/**
 	 * An else if block performs the given block if its expression evaluates to true and no 
 	 * previous if block evaluated to true.
@@ -16,48 +21,29 @@ public class ElseIfBlock extends Instruction {
 	 * @param block
 	 */
 	public ElseIfBlock(Expression expression, Block block) {
-		this.expression = expression;
-		this.block = block;
-	}
-	
-	/**
-	 * Assumes that the shouldExecute method returned true to the block parent of this instruction.
-	 * Executes this instruction by first resetting the statement's block, then running every instruction.
-	 */
-	public void execute(Graphics graphics, Block rootBlock) {
-		block.reset();
-		while (! block.isComplete())
-			block.execute(graphics, rootBlock);
+		super(expression, block);
 	}
 	
 	/**
 	 * Evaluates the branch instruction, and returns true if it evaluates to a positive non-zero number.
 	 */
 	public boolean shouldExecute(Block block) {
-		return expression.evaluate(block) >= 1;
+		Instruction previous = parentBlock.previousInstruction();
+		if (previous != null && previous instanceof IfBlock) {
+			IfBlock parentIf = (IfBlock) previous;
+			if (! parentIf.didExecute()) {
+				evaluated.setValue(expression.evaluate(block));
+				return evaluated.getValue() > 0;
+			}
+			else evaluated.setValue(0);
+		}
+		return false;
 	}
 	
 	/**
 	 * Returns the String representation of this block.
 	 */
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("if( ");
-		sb.append(expression.toString());
-		sb.append(" ) ");
-		sb.append(block.toString());
-		return sb.toString();
-	}
-
-	/**
-	 * Returns true if this instruction object is equivalent to another in the parse tree.
-	 */
-	public boolean equals(Instruction instruction, Block block) {
-		if (instruction instanceof ElseIfBlock) {
-			ElseIfBlock other = (ElseIfBlock) instruction;
-			return other.expression.equals(this.expression) &&
-				   other.block.equals(this.block);
-		}
-		return false;
+		return "else " + super.toString();
 	}
 }

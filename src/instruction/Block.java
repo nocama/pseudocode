@@ -5,13 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import expression.Expression;
-import expression.Symbol;
+import expression.SymbolTerminal;
 
 /**
  * Represents a block of pseudocode instructions.
  * 
  * @author  Keshav Saharia
  * 			keshav@techlabeducation.com
+ * 
+ * @license MIT
  */
 public class Block extends Instruction {
 	
@@ -200,7 +202,7 @@ public class Block extends Instruction {
 	 * @param symbol - the name of the symbol
 	 * @return true if the symbol exists, false otherwise
 	 */
-	public boolean hasSymbol(Symbol symbol) {
+	public boolean hasSymbol(SymbolTerminal symbol) {
 		return this.symbol.containsKey(symbol.toString());
 	}
 	
@@ -218,7 +220,7 @@ public class Block extends Instruction {
 	 * @param symbol - the name of the symbol
 	 * @return the value assigned to the symbol, or 0 if no value was assigned
 	 */
-	public double get(Symbol symbol) {
+	public double get(SymbolTerminal symbol) {
 		if (hasSymbol(symbol))
 			return this.symbol.get(symbol.toString());
 		else return 0;
@@ -240,7 +242,7 @@ public class Block extends Instruction {
 	 * @param symbol - the symbol name
 	 * @param expression - the Expression object representing the assigned value
 	 */
-	public void assign(Symbol symbol, Expression expression) {
+	public void assign(SymbolTerminal symbol, Expression expression) {
 		this.symbol.put(symbol.toString(), expression.evaluate(this));
 	}
 	

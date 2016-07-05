@@ -23,6 +23,7 @@ public class Parser {
 
 	// The list of shapes that can be drawn.
 	private String[] drawType = { "circle", "square", "rectangle", "oval", "line", "background" };
+	private String[] builtInExpression = { "mouse", "random" };
 	private static HashSet <String> reservedWords;
 	
 	/**
@@ -93,8 +94,10 @@ public class Parser {
 	}
 
 	/**
+	 * Parses an instruction in the context of the given block, and returns an Instruction
+	 * object if one could be parsed (or null otherwise).
 	 * 
-	 * @return
+	 * @return an Instruction object if one could be parsed, null otherwise
 	 */
 	private Instruction parseInstruction(Block block) {
 
@@ -104,70 +107,75 @@ public class Parser {
 		
 		// Parse an if statement
 		else if (getNext("if") && peekExpression()) {
-			return parseIfCondition(block);
+			return parseIf(block);
 		}
 		
 		// Parse an else-if or else statement
-		else if (getNext("else", "otherwise")) {
-			if (getNext("if") && peekExpression())
-				return parseElseIfCondition(block);
-			else
-				return new ElseBlock(parseBlock(block));
-		}
+//		else if (getNext("else", "otherwise")) {
+//			if (getNext("if") && peekExpression())
+//				return parseElseIf(block);
+//			else
+//				return new ElseBlock(parseBlock(block));
+//		}
 		
 		// Prints a given value to the standard output.
 		else if (getNext("print") && peekExpression()) {
-			return parsePrintInstruction();
+			return parsePrint();
 		}
 
 		// Sets the background to the given color
-		else if (getNext("set background", "set the background")) {
+		else if (getNext("background", "set background", "set the background")) {
 			return parseBackground();
 		}
 
-		// Draw a shape on the screen
+		// Draw something on the screen
 		else if (getNext("draw", "create", "place")) {
 			return parseDraw();
 		}
 
 		// Put keyword can be used for drawing or for assigning to a symbol
 		else if (getNext("put")) {
-			skipNext("a", "an");
-
-			// Put in the context of a drawing instruction
-			if (peekNext(drawType))
-				return parseDraw();
-
-			// Checks if there is an expression
-			else if (peekExpression()) {
-				Expression expr = parseExpression();
-
-				// If there is a symbol to assign it into
-				if (getNext("in", "into") && peekSymbol()) {
-					return new Assign(parseSymbol(), expr);
-				}
-			}
+			return parsePut();
 		}
 
 		// The set keyword 
 		else if (getNext("set")) {
-			if (peekSymbol()) {
-				Symbol symbol = parseSymbol();
-				if (getNext("to", "as") && peekExpression()) {
-					return new Assign(symbol, parseExpression());
-				}
-			}
+			return parseAssign();
 		}
 
 		// Increment, decrement, change
 		else if (peekNext("increment", "decrement", "change")) {
-			return parseIncrementInstruction();
+			return parseIncrement();
 		}
 
 		return null;
 	}
 	
-	private Instruction parseElseIfCondition(Block parentBlock) {
+	/**
+	 * Parses an instruction that begins with the "put" keyword.
+	 * @return
+	 */
+	private Instruction parsePut() {
+		skipNext("a", "an");
+
+		// Put in the context of a drawing instruction
+		if (peekNext(drawType))
+			return parseDraw();
+
+		// Checks if there is an expression
+		else if (peekExpression()) {
+			Expression expr = parseExpression();
+
+			// If there is a symbol to assign it into
+			if (getNext("in", "into") && peekSymbolTerminal()) {
+				return new Assign(parseSymbolTerminal(), expr);
+			}
+		}
+		
+		return null;
+	}
+
+	private Instruction parseElseIf(Block parentBlock) {
 		Expression condition = parseExpression();
 		if (condition != null) {
 			Block elseIfBlock = parseBlock(parentBlock);
@@ -176,7 +184,7 @@ public class Parser {
 		return null;
 	}
 
-	private Instruction parseIfCondition(Block parentBlock) {
+	private Instruction parseIf(Block parentBlock) {
 		Expression condition = parseExpression();
 		if (condition != null) {
 			Block ifBlock = parseBlock(parentBlock);
@@ -185,7 +193,7 @@ public class Parser {
 		return null;
 	}
 
-	private Instruction parsePrintInstruction() {
+	private Instruction parsePrint() {
 		Expression expression = parseExpression();
 		if (expression != null) {
 			return new Print(expression);
@@ -193,16 +201,22 @@ public class Parser {
 		return null;
 	}
 
-	private Instruction parseAssignInstruction() {
+	private Instruction parseAssign() {
+		if (peekSymbolTerminal()) {
+			SymbolTerminal symbol = parseSymbolTerminal();
+			if (getNext("to", "as") && peekExpression()) {
+				return new Assign(symbol, parseExpression());
+			}
+		}
 		return null;
 	}
 
-	private Instruction parseIncrementInstruction() {
+	private Instruction parseIncrement() {
 		// The direction in which the change will happen (increment and change are both positive)
 		int direction = (getNext().equals("decrement")) ? -1 : 1;
 
-		if (peekSymbol()) {
-			Symbol symbol = parseSymbol();
+		if (peekSymbolTerminal()) {
+			SymbolTerminal symbol = parseSymbolTerminal();
 
 			// Give an explicit amount to increment by
 			if (getNext("by") && peekExpression())
@@ -239,9 +253,9 @@ public class Parser {
 		skipNext("a", "an");
 		
 		if (getNext("big"))
-			size = Constants.BIG;
+			size = Constant.BIG;
 		if (getNext("small"))
-			size = Constants.SMALL;
+			size = Constant.SMALL;
 		
 		// Try parsing a color
 		Color color = parseColor();
@@ -357,15 +371,11 @@ public class Parser {
 		}
 		
 		// Try 1 word colors
-		System.out.println(peekNext());
-		System.out.println(peekNext(2));
 		if (RGB.hasColor(peekNext())) {
-			System.out.println("Has " + peekNext());
 			return RGB.getColor(getNext());
 		}
 		// Try 2 word colors
 		else if (RGB.hasColor(peekNext(2))) {
-			System.out.println("Has " + peekNext(2));
 			return RGB.getColor(getNext() + getNext());
 		}
 		
@@ -415,28 +425,19 @@ public class Parser {
 	}
 
 	private boolean peekExpression() {
-		return peekTerminal() || peekNext("(", ")") || peekExistingSymbol() || peekNext("mouse");
+		return peekNumberTerminal() || peekNext("(", ")") || peekExistingSymbolTerminal() 
+			|| peekNext("mouse") || peekNext("random");
 	}
 
 	private Expression parseExpression() {
 		if (getNext("mouse")) {
-			if (getNext("x"))
-				return new Symbol("mousex");
-			else if (getNext("y"))
-				return new Symbol("mousey");
-			else if (getNext("clicked"))
-				return new Symbol("mouseclicked");
-			else
-				return new Symbol("mouseclicked");
+			return parseMouseTerminal();
 		}
+		
 		if (getNext("("))
 			return parseExpression();
 		else {
-			Expression value = null;
-			if (peekTerminal())
-				value = parseTerminal();
-			else if (peekSymbol())
-				value = parseSymbol();
+			Expression value = parseTerminal();
 
 			if (peekNext(")"))
 				return value;
@@ -456,13 +457,7 @@ public class Parser {
 			return new Expression(head, operator, parseExpression());
 		
 		// Get the tail expression
-		Expression tail = null;
-		
-		// Set the tail to a terminal or symbol.
-		if (peekTerminal())
-			tail = parseTerminal();
-		else if (peekSymbol())
-			tail = parseSymbol();
+		Expression tail = parseTerminal();
 		
 		// If a tail to this expression was parsed
 		if (tail != null) {
@@ -483,50 +478,78 @@ public class Parser {
 		// Returns the expression head
 		return head;
 	}
+	
+	private Expression parseMouseTerminal() {
+		if (getNext("x"))
+			return new SymbolTerminal("mousex");
+		else if (getNext("y"))
+			return new SymbolTerminal("mousey");
+		else if (getNext("clicked"))
+			return new SymbolTerminal("mouseclicked");
+		
+		return new SymbolTerminal("mouseclicked");
+	}
+	
+	private boolean peekTerminal() {
+		return peekNumberTerminal() ||
+			   peekStringTerminal() ||
+			   peekExistingSymbolTerminal();
+	}
+	
+	/**
+	 * Tries to parse a terminal value and return it.
+	 * @return a Terminal object representing a parsed value if there was one.
+	 */
+	private Terminal parseTerminal() {
+		if (peekNumberTerminal())
+			return parseNumberTerminal();
+		if (peekStringTerminal())
+			return parseStringTerminal();
+		if (peekExistingSymbolTerminal())
+			return parseSymbolTerminal();
+		return null;
+	}
 
 	/**
 	 * Returns true if there is a valid symbol at the parsing index
 	 * @return
 	 */
-	private boolean peekSymbol() {
+	private boolean peekSymbolTerminal() {
 		return peekNext().matches("[a-zA-Z][a-zA-Z0-9\\_]*");
 	}
 
 	/**
-	 * Returns true if an existing symbol that the parser has already encountered is the next token
-	 * in the input stream.
-	 * @return
+	 * Returns true if an existing symbol that the parser has already encountered is the next token in the input stream.
+	 * @return true if the next symbol is an existing symbol or a reserved word.
 	 */
-	private boolean peekExistingSymbol() {
-		return peekSymbol() && (rootBlock.hasSymbol(peekNext()) || reservedWords.contains(peekNext()));
+	private boolean peekExistingSymbolTerminal() {
+		return peekSymbolTerminal() && (rootBlock.hasSymbol(peekNext()) || reservedWords.contains(peekNext()));
 	}
 
 	/**
 	 * Parses a symbol from the input stream and returns a Symbol object that represents it.
 	 * @return a Symbol object representing the next symbol in the input stream.
 	 */
-	private Symbol parseSymbol() {
+	private SymbolTerminal parseSymbolTerminal() {
 		String symbolName = getNext();
 		rootBlock.assign(symbolName, new Terminal(0));
-		return new Symbol(symbolName);
+		return new SymbolTerminal(symbolName);
 	}
 
 	/**
-	 * Returns true if the next token can be parsed as a terminal.
-	 * @return true if the next token is a terminal, false otherwise.
+	 * Returns true if the next token can be parsed as a literal number.
+	 * @return true if the next token is a numeric terminal, false otherwise.
 	 */
-	private boolean peekTerminal() {
+	private boolean peekNumberTerminal() {
 		return peekNext().matches("\\d+(|\\.\\d*)") ||
 			   (index + 1 < tokens.length && peekNext().equals("-") && tokens[index + 1].matches("\\d+(|\\.\\d*)"));
 	}
 
 	/**
-	 * Returns a Terminal object representing the next terminal value (currently only for numbers)
-	 * in the token input stream.
-	 * 
+	 * Returns a Terminal object representing the next numeric terminal value in the token input stream.
 	 * @return a Terminal object representing the next token as a number
 	 */
-	private Terminal parseTerminal() {
+	private Terminal parseNumberTerminal() {
 		boolean negative = getNext("-");
 		
 		String next = getNext();
@@ -537,6 +560,26 @@ public class Parser {
 			return null;
 		}
 	}
+	
+	/**
+	 * Returns true if the next token can be parsed as a string terminal.
+	 * @return true if the next token is a string terminal, false otherwise.
+	 */
+	private boolean peekStringTerminal() {
+		return peekNext().startsWith("\"") && peekNext().endsWith("\"");
+	}
+
+	/**
+	 * Returns a Terminal object representing the next terminal value (currently only for numbers)
+	 * in the token input stream.
+	 * 
+	 * @return a Terminal object representing the next token as a number
+	 */
+	private Terminal parseStringTerminal() {
+		String next = getNext();
+		return new StringTerminal(next.substring(1, next.length() - 1));
+	}
+	
 
 	/**
 	 * Returns true if any of the given Strings match the tokens at the current

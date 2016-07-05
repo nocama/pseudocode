@@ -10,6 +10,8 @@ import expression.RGB;
  * 
  * @author  Keshav Saharia
  * 			keshav@techlabeducation.com
+ * 
+ * @license MIT
  */
 public class Background extends Instruction {
 

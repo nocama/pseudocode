@@ -7,6 +7,8 @@ import java.awt.Graphics;
  * 
  * @author  Keshav Saharia
  * 			keshav@techlabeducation.com
+ * 
+ * @license MIT
  */
 public abstract class Instruction {
 	

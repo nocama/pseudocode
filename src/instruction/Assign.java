@@ -3,16 +3,19 @@ package instruction;
 import java.awt.Graphics;
 
 import expression.Expression;
-import expression.Symbol;
+import expression.SymbolTerminal;
 
 /**
  * The instruction for assigning the result of an expression to a variable.
  * 
- * @author keshav
+ * @author  Keshav Saharia
+ * 			keshav@techlabeducation.com
+ * 
+ * @license MIT
  */
 public class Assign extends Instruction {
 	
-	Symbol symbol;
+	SymbolTerminal symbol;
 	Expression expression;
 	
 	/**
@@ -20,7 +23,7 @@ public class Assign extends Instruction {
 	 * @param symbol - the Symbol object being assigned to
 	 * @param expression - the Expression object
 	 */
-	public Assign(Symbol symbol, Expression expression) {
+	public Assign(SymbolTerminal symbol, Expression expression) {
 		this.symbol = symbol;
 		this.expression = expression;
 	}
