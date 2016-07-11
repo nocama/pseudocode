@@ -106,7 +106,7 @@ public class EditorPanel extends JPanel implements KeyListener {
 	 */
 	public void keyReleased(KeyEvent e) {
 		// Auto-indentation
-		if (e.getKeyCode() == 0) {
+		if (e.getKeyCode() == 10) {
 			// Get the current line and caret position
 			int caret = area.getCaretPosition();
 			String text = area.getText();

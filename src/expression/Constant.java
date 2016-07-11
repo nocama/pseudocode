@@ -20,6 +20,12 @@ public class Constant {
 	public static final Terminal MEDIUM = new Terminal(20);
 	public static final Terminal SMALL = new Terminal(10);
 	
+	private static String[][] examples = { 
+		{ "Basics", "Draw shapes", "Mouse coloring" },
+		{ "Physics" }, 
+		{ "Games", "Flappy Bird", "Bouncing Ball" }
+	};
+	
 	// A set of reserved keywords
 	public static HashSet <String> command = new HashSet <String> () {{
 		add("draw");

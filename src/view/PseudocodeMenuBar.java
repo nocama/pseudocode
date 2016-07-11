@@ -5,9 +5,12 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -37,7 +40,7 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 	// Refers to the pseudocode frame that is containing this menu bar.
 	private Pseudocode pseudocode;
 	
-	private static String[] exampleCategories = { "Basics", "Physics", "Games" };
+	
 	private static HashMap <String, String> example;
 	
 	// The FileFilter object that is used to filter non-pseudocode files from being opened.
@@ -77,7 +80,7 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		add(fileMenu);
 		
 		// Create a menu for each example category
-		for (String category : exampleCategories) {
+		for (String category : new String[] {}) {
 			JMenu exampleMenu = createMenu(category);
 			
 			// Add a menu item for all example category additions
@@ -109,19 +112,19 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 	private void initializeExamples() {
 		example = new HashMap <String, String> ();
 		
-		final String path = "examples/Physics-Bouncing_Ball.pseudo";
+			System.out.println(readFile("/example/test.pseudo"));
 		
-		ClassLoader classLoader = getClass().getClassLoader();
+//		BufferedReader in = new BufferedReader(
+//			    new InputStreamReader(
+//			        getClass().getClassLoader().getResourceAsStream(path)));
 		
-		File file = new File(classLoader.getResource(path).getFile());
-		
-		System.out.println("Got example: " + file.exists());
+		//System.out.println("Got example: " + file.exists());
 		
 		// Run with jar file
 		
 		// Get the example folder resource 
 		// Get every category from the examples folder
-		for (String category : exampleCategories) {
+		//for (String category : exampleCategories) {
 
 			
 //			// Read all example files from the directory
@@ -139,7 +142,7 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 //				// Add the menu descriptor 
 //				exampleCategories.add(category);
 //			}
-		}
+		//}
 	}
 	
 	/**
@@ -171,6 +174,38 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		catch (FileNotFoundException e) {
 			return "";
 		}
+	}
+	
+	private String readFile(String classPath) {
+		return readFile(this.getClass().getResourceAsStream(classPath));
+	}
+	
+	/**
+	 * Reads the given File object and returns a String representing its contents.
+	 * @param file - a reference to the File
+	 * @return the file's contents as a String
+	 */
+	private String readFile(InputStream file) {
+		if (file != null) {
+			// Create a Scanner and StringBuilder object to read from this file.
+			Scanner scanner = new Scanner(file);
+			StringBuilder builder = new StringBuilder();
+			
+			// Read each line from the file
+			while (scanner.hasNextLine()) {
+				builder.append(scanner.nextLine());
+				
+				// Append new line characters between lines
+				if (scanner.hasNextLine())
+					builder.append("\n");
+			}
+			
+			// Clean up resources and return the resulting String.
+			scanner.close();
+			return builder.toString();
+			
+		}
+		return "";
 	}
 	
 	/**
