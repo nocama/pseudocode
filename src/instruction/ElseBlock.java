@@ -22,6 +22,8 @@ public class ElseBlock extends ElseIfBlock {
 	 * Returns the String representation of this block.
 	 */
 	public String toString() {
+		if (block == null)
+			return "else {}";
 		return "else " + block.toString();
 	}
 }

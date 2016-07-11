@@ -24,12 +24,17 @@ public class Lexer {
 		token = new StringBuilder();
 	}
 	
+	public String[] lex(String text) {
+		return lex(text, false);
+	}
+	
 	/**
 	 * 
-	 * @param text
+	 * @param text - the raw text
+	 * @param all - whether to include all tokens, including delimiters
 	 * @return
 	 */
-	public String[] lex(String text) {
+	public String[] lex(String text, boolean all) {
 		// Reset the lexer token stream and state.
 		tokens.clear();
 		int state = 0;
@@ -68,6 +73,7 @@ public class Lexer {
 			}
 			else if (c == ' ') {
 				pushToken();
+				if (all) pushToken(' ');
 			}
 			// Alphabetic characters are appended to the token if in the WORD state.
 			else if (state == WORD && Character.isAlphabetic(c)) {
@@ -113,6 +119,9 @@ public class Lexer {
 				else if (c == '"') {
 					token.append(c);
 					state = STRING;
+				}
+				else if (all) {
+					pushToken(c);
 				}
 			}
 		}

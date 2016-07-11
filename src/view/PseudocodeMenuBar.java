@@ -40,8 +40,12 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 	// Refers to the pseudocode frame that is containing this menu bar.
 	private Pseudocode pseudocode;
 	
-	
 	private static HashMap <String, String> example;
+	private static String[][] exampleCategory = {
+		{ "Basics", "Draw Shapes", "Mouse Coloring" },
+		{ "Physics", "Bouncing Ball" }, 
+		{ "Games", "Flappy Bird", "Paddle Bounce" }
+	};
 	
 	// The FileFilter object that is used to filter non-pseudocode files from being opened.
 	private FileFilter pseudocodeFilter = new FileFilter() {
@@ -52,7 +56,7 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 				   pathname.getAbsolutePath().endsWith(".pseudo") ||
 				   pathname.getAbsolutePath().endsWith(".txt");
 		}
-
+		
 		@Override
 		public String getDescription() {
 			return "Pseudocode (.pseudo, .txt)";
@@ -65,8 +69,6 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		
 		this.pseudocode = pseudocode;
 		this.setFont(font);
-		if (example == null)
-			initializeExamples();
 		initialize();
 	}
 	
@@ -79,70 +81,22 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		fileMenu.add(createMenuItem("Quit", 'Q'));
 		add(fileMenu);
 		
+		// Maps examples to their string representation
+		example = new HashMap <String, String> ();
+		
 		// Create a menu for each example category
-		for (String category : new String[] {}) {
-			JMenu exampleMenu = createMenu(category);
+		for (String[] category : exampleCategory) {
+			JMenu exampleMenu = createMenu(category[0]);
 			
-			// Add a menu item for all example category additions
-			for (String fileName : example.keySet()) {
-				
-				if (fileName.startsWith(category + "-")) {
-					String name = fileName.substring(category.length() + 1);
-					
-					// Remove the .pseudo type from the name 
-					if (name.endsWith(".pseudo"))
-						name = name.substring(0, name.indexOf(".pseudo"));
-					
-					// Replace underscores with spaces
-					name = name.replace('_', ' ');
-					
-					// Add a menu item for opening this example file
-					exampleMenu.add(createMenuItem(name, fileName));
-				}
-				
+			// For each category
+			for (int i = 1 ; i < category.length ; i++) {
+				// Add a menu item for each example
+				exampleMenu.add(createMenuItem(category[i]));
+				example.put(category[i], readExample(category[i]));
 			}
 				
 			add(exampleMenu);
 		}
-	}
-	
-	/**
-	 * Initialize all the example files.
-	 */
-	private void initializeExamples() {
-		example = new HashMap <String, String> ();
-		
-			System.out.println(readFile("/example/test.pseudo"));
-		
-//		BufferedReader in = new BufferedReader(
-//			    new InputStreamReader(
-//			        getClass().getClassLoader().getResourceAsStream(path)));
-		
-		//System.out.println("Got example: " + file.exists());
-		
-		// Run with jar file
-		
-		// Get the example folder resource 
-		// Get every category from the examples folder
-		//for (String category : exampleCategories) {
-
-			
-//			// Read all example files from the directory
-//			if (exampleCategory.isDirectory()) {
-//				ArrayList <String> category = new ArrayList <String> ();
-//				// Add the name of the category to the list
-//				category.add(exampleCategory.getName());
-//			
-//				// Add the name of every example file
-//				for (File exampleFile : exampleCategory.listFiles()) {
-//					category.add(exampleFile.getName());
-//					example.put(exampleFile.getName(), readFile(exampleFile));
-//				}
-//				
-//				// Add the menu descriptor 
-//				exampleCategories.add(category);
-//			}
-		//}
 	}
 	
 	/**
@@ -174,6 +128,10 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		catch (FileNotFoundException e) {
 			return "";
 		}
+	}
+	
+	private String readExample(String name) {
+		return readFile(this.getClass().getResourceAsStream("/example/" + name.replace(' ', '_') + ".pseudo"));
 	}
 	
 	private String readFile(String classPath) {
@@ -226,7 +184,7 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 	 * @return the JMenuItem object representing this item
 	 */
 	private JMenuItem createMenuItem(String name) {
-		return createMenuItem(name, name.toLowerCase(), (char) 0);
+		return createMenuItem(name, name, (char) 0);
 	}
 	
 	/**
@@ -246,7 +204,7 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 	 * @return the JMenuItem object representing this item
 	 */
 	private JMenuItem createMenuItem(String name, char shortcut) {
-		return createMenuItem(name, name.toLowerCase(), shortcut);
+		return createMenuItem(name, name, shortcut);
 	}
 	
 	/**
@@ -281,6 +239,7 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 	 */
 	public void actionPerformed(ActionEvent event) {
 		String command = event.getActionCommand();
+		System.out.println(command);
 		
 		// Standard file commands
 		if (command.equals("new")) newFile();
@@ -353,8 +312,9 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 	 */
 	private void openExample(String exampleName) {
 		// TODO: check for unsaved changes
-		if (example != null)
-			pseudocode.updateText(example.get(exampleName));
+		System.out.println("Example: " + exampleName);
+		System.out.println(example.get(exampleName));
+		pseudocode.updateText(example.get(exampleName));
 	}
 }
  

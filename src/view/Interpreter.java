@@ -25,7 +25,7 @@ import instruction.Block;
  *
  * @license MIT
  */
-public class OutputPanel extends JPanel implements MouseListener, MouseMotionListener {
+public class Interpreter extends JPanel implements MouseListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L;
 
 	// The underlying algorithm being run by this output view.
@@ -34,7 +34,7 @@ public class OutputPanel extends JPanel implements MouseListener, MouseMotionLis
 	private boolean firstReset = true;
 	private boolean reset = true;
 	private boolean alwaysRepaint = true;
-	private boolean printBlock = true;
+	private boolean printBlock = false;
 
 	// BufferedImages for double buffering output
 	private BufferedImage front;
@@ -50,8 +50,8 @@ public class OutputPanel extends JPanel implements MouseListener, MouseMotionLis
 	 * Constructs an OutputPanel object that will be displayed in the given PseudocodeFrame frame.
 	 * @param frame - the frame that the output panel would be placed in
 	 */
-	public OutputPanel(Pseudocode frame) {
-
+	public Interpreter(Pseudocode frame) {
+		
 		// Sets the width and height of the panel
 		setSize(frame.getWidth() / 2, frame.getHeight());
 
@@ -119,7 +119,7 @@ public class OutputPanel extends JPanel implements MouseListener, MouseMotionLis
 		}
 	}
 
-	public void update(Block block) {
+	public void interpret(Block block) {
 		// Initialize color palette.
 		RGB.initialize();
 

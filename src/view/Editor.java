@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.HashSet;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -12,6 +13,9 @@ import javax.swing.JTextPane;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+
+import expression.Constant;
+import parser.Lexer;
 
 /**
  * 
@@ -21,18 +25,27 @@ import javax.swing.text.StyledDocument;
  *
  * @license MIT
  */
-public class EditorPanel extends JPanel implements KeyListener {
+public class Editor extends JPanel implements KeyListener {
 	private static final long serialVersionUID = 1L;
+	
 	
 	// References to the text area and parent frame.
 	private JTextPane area;
 	private Pseudocode pseudocode;
 	
+	// For formatting
+	private static final String FONT = "Menlo";
+	private static final int FONT_SIZE = 18;
+	private static final Color background = new Color(248, 248, 248);
+	private static final Color keyword = new Color(51, 102, 153);
+	
+	private static Lexer lexer;
+	
 	/**
 	 * Constructs the editor.
 	 * @param pseudocode
 	 */
-	public EditorPanel(Pseudocode pseudocode) {
+	public Editor(Pseudocode pseudocode) {
 		this.pseudocode = pseudocode;
 		
 		// Set the size and layout manager for this panel.
@@ -42,6 +55,7 @@ public class EditorPanel extends JPanel implements KeyListener {
 		// Create a text area in a scroll pane 
 		area = new JTextPane();
 		area.setFont(new Font("Menlo", 0, 18));
+		area.setBackground(new Color(245, 245, 245));
 		initializeFormatting();
 		
 		JPanel areaPanel = new JPanel( new BorderLayout() );
@@ -58,7 +72,26 @@ public class EditorPanel extends JPanel implements KeyListener {
 	public void format() {
 		StyledDocument document = area.getStyledDocument();
 		document.setCharacterAttributes(0, area.getText().length(), area.getStyle("base"), true);
-		document.setCharacterAttributes(0, 3, area.getStyle("keyword"), true);
+		
+		int position = 0;
+		String[] lines = area.getText().split("\n");
+		for (String line : lines) {
+			String[] tokens = lexer.lex(line, true);
+			
+			for (int i = 0 ; i < tokens.length ; i++) {
+				String token = tokens[i];
+				String style = null;
+				
+				if (i == 0 && Constant.keyword.contains(token)) {
+					document.setCharacterAttributes(position, token.length(), area.getStyle("keyword"), true);
+				}
+				else if (Constant.operator.contains(token)) {
+					document.setCharacterAttributes(position, token.length(), area.getStyle("operator"), true);
+				}
+				position += token.length();
+			}
+			position++;
+		}
 	}
 	
 	/**
@@ -66,16 +99,26 @@ public class EditorPanel extends JPanel implements KeyListener {
 	 * @see NXTalkFormatter
 	 */
 	private void initializeFormatting() {
-		Style base = area.addStyle("base", null);
-		StyleConstants.setFontSize(base, 18);
-		StyleConstants.setFontFamily(base, "Menlo");
-		StyleConstants.setForeground(base, new Color(0, 0, 0));
+		lexer = new Lexer();
 		
-		Style keyword = area.addStyle("keyword", null);
-		StyleConstants.setFontSize(keyword, 18);
-		StyleConstants.setFontFamily(keyword, "Menlo");
-		StyleConstants.setBold(keyword, true);
+		addStyle("base", new Color(20, 20, 20), false, false);
+		addStyle("keyword", Color.BLUE, true, false);
+		addStyle("attribute", Color.CYAN, false, false);
+		addStyle("number", Color.GREEN, false, false);
+		addStyle("operator", Color.RED, false, false);
+		addStyle("operator", Color.RED, false, false);
 	}
+	
+	private void addStyle(String name, Color color, boolean bold, boolean italic) {
+		Style style = area.addStyle(name, null);
+		StyleConstants.setForeground(style, color);
+		StyleConstants.setFontSize(style, FONT_SIZE);
+		StyleConstants.setFontFamily(style, FONT);
+		StyleConstants.setBold(style, bold);
+		StyleConstants.setItalic(style, italic);
+	}
+
+	
 //		
 //		Style style;
 //		for (int syntax = 0 ; syntax <= NXTalk.SyntaxTypes ; syntax++) {
@@ -127,7 +170,7 @@ public class EditorPanel extends JPanel implements KeyListener {
 				}
 				
 				if (indent.length() > 0) {
-					area.setText(text + indent);
+					area.setText(text.substring(0, caret) + indent + text.substring(caret));
 					area.setCaretPosition(caret + indent.length());
 				}
 			}

@@ -20,17 +20,17 @@ public class Constant {
 	public static final Terminal MEDIUM = new Terminal(20);
 	public static final Terminal SMALL = new Terminal(10);
 	
-	private static String[][] examples = { 
-		{ "Basics", "Draw shapes", "Mouse coloring" },
-		{ "Physics" }, 
-		{ "Games", "Flappy Bird", "Bouncing Ball" }
-	};
-	
 	// A set of reserved keywords
-	public static HashSet <String> command = new HashSet <String> () {{
+	public static HashSet <String> keyword = new HashSet <String> () {{
 		add("draw");
 		add("set");
 		add("set background");
+		add("increment");
+		add("decrement");
+		add("increase");
+		add("decrease");
+		add("change");
+		add("invert");
 	}};
 	
 	public static HashSet <String> property = new HashSet <String> () {{

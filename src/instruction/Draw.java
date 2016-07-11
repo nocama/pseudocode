@@ -171,13 +171,13 @@ public class Draw extends Instruction {
 	@Override
 	public String toString() {
 		switch (type) {
-		case Circle: return "draw a circle at (" + x + ", " + y + ") of diameter " + width;
-		case Square: return "draw a square at (" + x + ", " + y + ") of side length " + width;
-		case Oval: return "draw a oval at (" + x + ", " + y + ") of size " + width + " x " + height;
-		case Rectangle: return "draw a rectangle at (" + x + ", " + y + ") of size " + width + " x " + height;
-		case Line: return "draw a rectangle at (" + x + ", " + y + ") of size " + width + " x " + height;
+		case Circle: return "Window.out.circle(" + x + ", " + y + ", " + width + ");\n";
+		case Square: return "Window.out.square(" + x + ", " + y + ", " + width + ");\n";
+		case Oval: return "Window.out.oval(" + x + ", " + y + ", " + width + ", " + height + ");\n";
+		case Rectangle: return "Window.out.rectangle(" + x + ", " + y + ", " + width + ", " + height + ");\n";
+		case Line: return "Window.out.line(" + x + ", " + y + ", " + width + ", " + height + ");\n";
 		}
-		return "bad instruction";
+		return "";
 	}
 	
 	public boolean isRectangle() {
