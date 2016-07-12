@@ -10,9 +10,13 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import mesh.Server;
+import mesh.Client;
 import expression.RGB;
 import expression.Terminal;
 import instruction.Block;
@@ -27,9 +31,14 @@ import instruction.Block;
  */
 public class Interpreter extends JPanel implements MouseListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L;
-
+	private static final int DEFAULT_PORT = 4965;
+	
+	// Reference to the parent frame.
+	private Pseudocode pseudocode;
+	
 	// The underlying algorithm being run by this output view.
 	private Block block;
+	
 	// Flag for resetting the output view.
 	private boolean firstReset = true;
 	private boolean reset = true;
@@ -45,12 +54,22 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 	public static Terminal mouseClicked = new Terminal();
 	public static Terminal mouseX = new Terminal();
 	public static Terminal mouseY = new Terminal();
+	
+	// Mesh data
+	public static boolean meshRunning = false;
 
+	// References to threads for master-slave network.
+	private static Server server;
+	private static Client client;
+	private static boolean running = false;
+	
+	
 	/**
 	 * Constructs an OutputPanel object that will be displayed in the given PseudocodeFrame frame.
 	 * @param frame - the frame that the output panel would be placed in
 	 */
 	public Interpreter(Pseudocode frame) {
+		this.pseudocode = frame;
 		
 		// Sets the width and height of the panel
 		setSize(frame.getWidth() / 2, frame.getHeight());
@@ -144,8 +163,42 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 		this.block = block;
 		reset = true;
 	}
-
-
+	
+	public void startMesh() {
+		if (! meshRunning) {
+			meshRunning = true;
+			server = new Server(DEFAULT_PORT);
+		}
+	}
+	
+	public void joinMesh() {
+		if (meshRunning) {
+			if (client != null) {
+				client.interrupt();
+			}
+			if (server != null) {
+				server.interrupt();
+			}
+		}
+		meshRunning = true;
+		String ip = meshInput("Enter the server IP address.");
+		int port = DEFAULT_PORT;
+		if (ip.indexOf(':') > 0) {
+			try {
+				port = Integer.parseInt(ip.substring(ip.indexOf(':') + 1));
+				
+			} catch (NumberFormatException e) {};
+		}
+	}
+	
+	public String meshInput(String message) {
+		return JOptionPane.showInputDialog(pseudocode, message);
+	}
+	
+	public void meshAlert(String message) {
+		JOptionPane.showMessageDialog(pseudocode, message);
+	}
+	
 	private void print(Block block) {
 		System.out.println("public class Pseudocode {");
 		for (String symbol : block.getSymbolTable().keySet()) {

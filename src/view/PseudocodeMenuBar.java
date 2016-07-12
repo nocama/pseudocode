@@ -47,17 +47,24 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		{ "Games", "Flappy Bird", "Paddle Bounce" }
 	};
 	
+	// The menu item that shows the current mesh
+	private static JMenuItem mesh;
+	
 	// The FileFilter object that is used to filter non-pseudocode files from being opened.
 	private FileFilter pseudocodeFilter = new FileFilter() {
 
-		@Override
+		/**
+		 * Returns true if the given File object represents a valid pseudocode file.
+		 */
 		public boolean accept(File pathname) {
 			return pathname.isDirectory() ||
 				   pathname.getAbsolutePath().endsWith(".pseudo") ||
 				   pathname.getAbsolutePath().endsWith(".txt");
 		}
 		
-		@Override
+		/**
+		 * Returns the description of pseudocode files for file choosers.
+		 */
 		public String getDescription() {
 			return "Pseudocode (.pseudo, .txt)";
 		}
@@ -82,8 +89,10 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		add(fileMenu);
 		
 		JMenu meshMenu = createMenu("Mesh");
-		meshMenu.add(createMenuItem("Start Mesh", 'M'));
+		mesh = createMenuItem("Start Mesh", 'M');
+		meshMenu.add(mesh);
 		meshMenu.add(createMenuItem("Join Mesh", 'J'));
+		add(meshMenu);
 		
 		// Maps examples to their string representation
 		example = new HashMap <String, String> ();
@@ -134,12 +143,13 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		}
 	}
 	
+	/**
+	 * Reads the example file with the given name.
+	 * @param name - name of the example
+	 * @return string content of the example file
+	 */
 	private String readExample(String name) {
 		return readFile(this.getClass().getResourceAsStream("/example/" + name.replace(' ', '_') + ".pseudo"));
-	}
-	
-	private String readFile(String classPath) {
-		return readFile(this.getClass().getResourceAsStream(classPath));
 	}
 	
 	/**
@@ -246,18 +256,22 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		System.out.println(command);
 		
 		// Standard file commands
-		if (command.equals("new")) newFile();
-		else if (command.equals("open")) openFile();
-		else if (command.equals("save")) saveFile();
-		else if (command.equals("save as")) saveFileAs();
-		else if (command.equals("quit")) quit();
+		if (command.equals("New")) newFile();
+		else if (command.equals("Open")) openFile();
+		else if (command.equals("Save")) saveFile();
+		else if (command.equals("Save As")) saveFileAs();
+		else if (command.equals("Quit")) quit();
+		
+		// Mesh commands
+		else if (command.equals("Start Mesh")) pseudocode.interpreter.startMesh();
+		else if (command.equals("Join Mesh")) pseudocode.interpreter.joinMesh();
 		
 		// Command to open an example
 		else if (example.containsKey(command)) {
 			openExample(command);
 		}
 	}
-	
+
 	/**
 	 * Opens a new instance of the Pseudocode editor.
 	 */

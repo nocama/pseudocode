@@ -33,7 +33,7 @@ public class Pseudocode extends JFrame {
 	
 	// Editor and output panel reference.
 	Editor editor;
-	Interpreter output;
+	Interpreter interpreter;
 	
 	// Parser
 	Parser parser;
@@ -51,15 +51,15 @@ public class Pseudocode extends JFrame {
 		// Creates a JPanel to contain the editor and output panel.
 		JPanel container = new JPanel();
 		editor = new Editor(this);
-		output = new Interpreter(this);
+		interpreter = new Interpreter(this);
 		parser = new Parser();
 		
 		this.addComponentListener(new ComponentListener() {
 
 			public void componentResized(ComponentEvent e) {
-				output.setSize(getWidth() / 2, getHeight());
+				interpreter.setSize(getWidth() / 2, getHeight());
 				if (parsed != null) {
-					output.interpret(parsed);
+					interpreter.interpret(parsed);
 				}
 			}
 			
@@ -72,7 +72,7 @@ public class Pseudocode extends JFrame {
 		// Add the panels to the container, and add the container to the JFrame.
 		container.setLayout(new GridLayout(1, 2));
 		container.add(editor);
-		container.add(output);
+		container.add(interpreter);
 		add(container);
 		
 		//setResizable(false);
@@ -84,12 +84,11 @@ public class Pseudocode extends JFrame {
 	 */
 	public void update(String text) {
 		parsed = parser.parse(text);
-		output.interpret(parsed);
+		interpreter.interpret(parsed);
 	}
 	
 	public void updateText(String text) {
 		editor.updateText(text);
 		update(text);
 	}
-	
 }
