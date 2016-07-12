@@ -37,7 +37,10 @@ public class Editor extends JPanel implements KeyListener {
 	private static final String FONT = "Menlo";
 	private static final int FONT_SIZE = 18;
 	private static final Color background = new Color(248, 248, 248);
+	private static final Color foreground = new Color(20, 20, 20);
 	private static final Color keyword = new Color(51, 102, 153);
+	private static final Color attribute = new Color(51, 102, 153);
+	private static final Color operator = new Color(221, 17, 153);
 	
 	private static Lexer lexer;
 	
@@ -55,7 +58,7 @@ public class Editor extends JPanel implements KeyListener {
 		// Create a text area in a scroll pane 
 		area = new JTextPane();
 		area.setFont(new Font("Menlo", 0, 18));
-		area.setBackground(new Color(245, 245, 245));
+		area.setBackground(background);
 		initializeFormatting();
 		
 		JPanel areaPanel = new JPanel( new BorderLayout() );
@@ -101,8 +104,8 @@ public class Editor extends JPanel implements KeyListener {
 	private void initializeFormatting() {
 		lexer = new Lexer();
 		
-		addStyle("base", new Color(20, 20, 20), false, false);
-		addStyle("keyword", Color.BLUE, true, false);
+		addStyle("base", foreground, false, false);
+		addStyle("keyword", keyword, true, false);
 		addStyle("attribute", Color.CYAN, false, false);
 		addStyle("number", Color.GREEN, false, false);
 		addStyle("operator", Color.RED, false, false);
