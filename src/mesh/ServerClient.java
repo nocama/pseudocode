@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ServerClient extends Thread {
 	private Server master;
@@ -12,6 +13,7 @@ public class ServerClient extends Thread {
 	private PrintWriter output;
 	private String ip;
 	private boolean connected = false;
+	private static ConcurrentHashMap <String, Double> cache;
 
 	public ServerClient(Socket socket, Server master) {
 		try {
