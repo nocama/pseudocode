@@ -48,12 +48,20 @@ public class Parser {
 	 * @return
 	 */
 	public Block parse(String text) {
+		// Reset the parser with the given text
+		reset(text);
+		
+		// Start the high-level parsing routine
+		return parseBlock(null);
+	}
+	
+	/**
+	 * Resets the parser with the given text.
+	 */
+	public void reset(String text) {
 		// Lex the input text and reset the parser
 		tokens = lexer.lex(text);
 		index = 0;
-
-		// Start the high-level parsing routine
-		return parseBlock(null);
 	}
 
 	/**

@@ -172,6 +172,7 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 
 	@Override
 	public void mousePressed(MouseEvent e) {
+		System.out.println("clicked");
 		mouseClicked.setValue(1);
 		if (block != null)
 			block.assign("mouseclicked", mouseClicked);
@@ -179,6 +180,7 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
+		System.out.println("released");
 		mouseClicked.setValue(0);
 		if (block != null)
 			block.assign("mouseclicked", mouseClicked);

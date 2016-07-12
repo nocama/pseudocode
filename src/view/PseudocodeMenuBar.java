@@ -81,6 +81,10 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		fileMenu.add(createMenuItem("Quit", 'Q'));
 		add(fileMenu);
 		
+		JMenu meshMenu = createMenu("Mesh");
+		meshMenu.add(createMenuItem("Start Mesh", 'M'));
+		meshMenu.add(createMenuItem("Join Mesh", 'J'));
+		
 		// Maps examples to their string representation
 		example = new HashMap <String, String> ();
 		

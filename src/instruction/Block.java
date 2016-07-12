@@ -20,6 +20,7 @@ public class Block extends Instruction {
 	// Reference to the symbol table. If this block is created by a parent block, this
 	// will reference the symbol table of the parent block.
 	private HashMap <String, Double> symbol;
+	private HashMap <String, String> stringSymbol;
 	private Block parent;
 	
 	// A list of instructions in the block.

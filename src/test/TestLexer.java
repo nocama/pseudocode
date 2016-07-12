@@ -58,6 +58,11 @@ public class TestLexer {
 		//assertTrue(test("draw a circle at", "draw", "a", "circle", "at"));
 	}
 	
+	@Test
+	public void testPossessiveLex() {
+		assertTrue(test("draw a circle at keshav's x, keshav's y", "draw", "a", "circle", "at", "keshav's", "x", ",", "keshav's", "y"));
+	}
+	
 	public boolean test(String ... lex) {
 		if (lex.length > 0) {
 			String[] tokens = lexer.lex(lex[0]);

@@ -37,6 +37,7 @@ public class Constant {
 		add("otherwise if");
 		add("else");
 		add("otherwise");
+		add("print");
 	}};
 	
 	public static HashSet <String> property = new HashSet <String> () {{
