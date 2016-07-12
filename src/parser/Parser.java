@@ -531,6 +531,8 @@ public class Parser {
 	 * @return a Terminal object representing a parsed value if there was one.
 	 */
 	public Terminal parseTerminal() {
+		if(peekRandomTerminal())
+			return parseRandomTerminal();
 		if (peekMouseTerminal())
 			return parseMouseTerminal();
 		if (peekNumberTerminal())
@@ -539,6 +541,55 @@ public class Parser {
 			return parseStringTerminal();
 		if (peekExistingSymbolTerminal())
 			return parseSymbolTerminal();
+		return null;
+	}
+	
+	/**
+	 * Returns true if a random number is called
+	 * @return
+	 */
+	public boolean peekRandomTerminal(){
+		return peekNext("random number");
+	}
+	
+	/*
+	 * Returns a random number between the value of two expressions
+	 * @return random number
+	 */
+	public Terminal parseRandomTerminal(){
+		getNext("random number");
+		if(peekNext("between")){
+			skipNext("between");
+			
+			if (peekExpression()){
+				
+				Expression min = parseExpression();
+				if(getNext("and")){
+					
+					if(peekExpression()){
+						Expression max = parseExpression();
+						
+						if( min == null || max == null)
+							return null;
+						
+						return new RandomTerminal(min,max);
+					}
+				}
+				
+
+			}
+		}
+		else if(peekNext("to")){
+			getNext("to");
+			if(peekExpression()){
+				Expression max = parseExpression();
+				return new RandomTerminal(max);
+			}
+		}
+		else{
+			return new RandomTerminal();
+		}	
+		
 		return null;
 	}
 

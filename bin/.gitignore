@@ -1,8 +1,9 @@
+/.DS_Store
+/datastructure/
+/example/
+/expression/
+/instruction/
+/mesh/
 /parser/
 /test/
 /view/
-/examples/
-/expression/
-/instruction/
-/datastructure/
-/mesh/
