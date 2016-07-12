@@ -31,6 +31,12 @@ public class Constant {
 		add("decrease");
 		add("change");
 		add("invert");
+		add("if");
+		add("forever");
+		add("else if");
+		add("otherwise if");
+		add("else");
+		add("otherwise");
 	}};
 	
 	public static HashSet <String> property = new HashSet <String> () {{

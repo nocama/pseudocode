@@ -85,11 +85,13 @@ public class Editor extends JPanel implements KeyListener {
 				String token = tokens[i];
 				String style = null;
 				
-				if (i == 0 && Constant.keyword.contains(token)) {
-					document.setCharacterAttributes(position, token.length(), area.getStyle("keyword"), true);
-				}
-				else if (Constant.operator.contains(token)) {
-					document.setCharacterAttributes(position, token.length(), area.getStyle("operator"), true);
+				if (i == 0 && Constant.keyword.contains(token))
+					style = "keyword";
+				else if (Constant.operator.contains(token)) 
+					style = "operator";
+				
+				if (style != null) {
+					document.setCharacterAttributes(position, token.length(), area.getStyle(style), true);
 				}
 				position += token.length();
 			}
@@ -106,10 +108,10 @@ public class Editor extends JPanel implements KeyListener {
 		
 		addStyle("base", foreground, false, false);
 		addStyle("keyword", keyword, true, false);
-		addStyle("attribute", Color.CYAN, false, false);
+		addStyle("attribute", attribute, false, false);
 		addStyle("number", Color.GREEN, false, false);
 		addStyle("operator", Color.RED, false, false);
-		addStyle("operator", Color.RED, false, false);
+		//addStyle("operator", Color.RED, false, false);
 	}
 	
 	private void addStyle(String name, Color color, boolean bold, boolean italic) {
