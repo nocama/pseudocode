@@ -22,6 +22,7 @@ public class RGB {
 	private static void addColor(String name, int r, int g, int b) {
 		color.put(name.replaceAll("\\s", ""), new Color(r, g, b));
 	}
+
 	
 	public static Color getColor(String name) {
 		return color.get(name.toLowerCase().replaceAll("\\s", ""));

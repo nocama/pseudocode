@@ -20,7 +20,7 @@ public class RandomTerminal extends Terminal {
 	public double evaluate(Block block) {
 		if (min == null){
 			if(max == null)
-				return Math.random() * 600;
+				return Math.random() * 100;
 			double maxValue = max.evaluate(block);
 			return (double) ((int) (Math.random() * (maxValue - 0)) + 0);
 		}	

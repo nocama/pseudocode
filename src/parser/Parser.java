@@ -390,8 +390,21 @@ public class Parser {
 	public Color parseColor() {
 		if (peekNext().startsWith("#") && peekNext().length() == 7 && 
 				peekNext().matches("\\#[0-9a-f]+")) {
-
 			// Parse hex code
+		}
+		//try rgb values
+		if(peekNumberTerminal()||peekRandomTerminal()){
+			int r = (int) parseTerminal().getValue();
+			if(peekNumberTerminal()||peekRandomTerminal()){
+				int g = (int) parseTerminal().getValue();
+				if(peekNumberTerminal()||peekRandomTerminal()){
+					int b = (int) parseTerminal().getValue();
+					r %= 256;
+					g %= 256;
+					b %= 256;
+					return new Color(r,g,b);
+				}
+			}
 		}
 
 		// Try 1 word colors
@@ -523,7 +536,7 @@ public class Parser {
 		return  peekNumberTerminal() ||
 				peekStringTerminal() ||
 				peekExistingSymbolTerminal() ||
-				peekMouseTerminal();
+				peekMouseTerminal()||peekRandomTerminal();
 	}
 
 	/**

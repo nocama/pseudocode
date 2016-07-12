@@ -22,7 +22,7 @@ The steps of a parser
 - [ ] Get all keywords into expression/Constant.java
 - [ ] Formatting
 - [ ] Ensure all files are commented
-- [ ] Random numbers
+- [√] Random numbers
 - [ ] Random color
 - [ ] Square root and absolute value (`square root of x`)
 - [ ] Distance function (`distance from x, y to a, b`)
