@@ -22,8 +22,11 @@ public class KeyTerminal extends Terminal {
 	 * evaluates to its double value.
 	 */
 	public double evaluate(Block block) {
+		// If the pressed flag is true, get the symbol for whether the key is pressed
 		if (pressed)
 			return block.get(key + " pressed");
+		
+		// Otherwise negate the symbol
 		else
 			return (block.hasSymbol(key + " pressed") && 
 					block.get(key + " pressed") == 0) ? 1 : 0;

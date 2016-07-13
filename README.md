@@ -18,21 +18,26 @@ The steps of a parser
 
 ## Todo list
 
-- [ ] Draw an image from the web
+**everyone** - create examples in the `example` package as `My_Example.pseudo`
+
 - [ ] Get all keywords into expression/Constant.java
-- [ ] Formatting
+- [ ] Formatting the editor
+- [ ] Console for print output
+- [ ] Add polygons (`draw a polygon from a, b to c, d to e, f`)
+- [ ] String interpolation (`print "the value of the variable is $variable and I am at $x, $y"`)
+- [ ] Draw an image from the web (`import "https://image.com/image.png" as xyz` ... `draw xyz at 300, 300`)
 - [ ] Ensure all files are commented
 - [√] Random numbers
-- [ ] Random color
-- [ ] Square root and absolute value (`square root of x`)
-- [ ] Distance function (`distance from x, y to a, b`)
+- [√] Random color
+- [ ] Commenting in the code (`// comment`) - add to Lexer.java, not to Parser.java
+- [ ] Square root and absolute value (`square root of x`, `absolute value of x`)
+- [√] Distance function (`distance from x, y to a, b`)
 - [ ] Mesh with other
 - [ ] Fix mouse clicked event
-- [ ] Add polygons
-- [ ] Arbitrary RGB colors
-- [ ] Assign string to variable
+- [ ] Arbitrary RGB colors (`draw an rgb 1, 2, 3 square`) and hex codes*
 - [ ] Parser tests - test individual parsing routines
-- [ ] Commenting in the code (`// comment`)
+
+* in the Window.java library
 
 ## Future todo list
 
@@ -50,6 +55,22 @@ draw a triangle at x, y
 to add one to x,
 	set x to x + 1
 	increment x
+```
+
+- [ ] Simple class
+
+```
+a ball has an x, y
+
+when a ball is created,
+	set x to a random number
+	set y to a random number
+
+when a ball is told to draw,
+	draw a red circle at ball's x, ball's y
+
+set b to a new ball
+tell b to draw
 ```
 
 ## Mesh

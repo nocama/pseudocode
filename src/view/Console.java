@@ -9,7 +9,7 @@ public class Console extends JFrame {
 	public Console(Interpreter interpreter) {
 		super("Console");
 		this.interpreter = interpreter;
-		
+		setSize(500, 300);
 	}
 	
 }

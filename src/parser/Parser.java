@@ -418,24 +418,30 @@ public class Parser {
 	 * @return
 	 */
 	public Color parseColor() {
-		if (peekNext().startsWith("#") && peekNext().length() == 7 && 
-				peekNext().matches("\\#[0-9a-f]+")) {
-			// Parse hex code
+		// TODO: Parse hex code
+		if (peekNext().length() == 7 && peekNext().matches("\\#[0-9a-f]+")) {
+			String hex = getNext();
 		}
-		//try rgb values
-		if(peekNumberTerminal()||peekRandomTerminal()){
-			int r = (int) parseTerminal().getValue();
-			if(peekNumberTerminal()||peekRandomTerminal()){
-				int g = (int) parseTerminal().getValue();
-				if(peekNumberTerminal()||peekRandomTerminal()){
-					int b = (int) parseTerminal().getValue();
-					r %= 256;
-					g %= 256;
-					b %= 256;
-					return new Color(r,g,b);
-				}
-			}
+		
+		// TODO: Parse an RGB value
+		if (getNext("rgb")) {
+			
 		}
+		
+		// TODO: check if it's an RGB value
+//		if(peekNumberTerminal() || peekRandomTerminal()){
+//			int r = (int) parseTerminal().getValue();
+//			if(peekNumberTerminal() || peekRandomTerminal()){
+//				int g = (int) parseTerminal().getValue();
+//				if(peekNumberTerminal()||peekRandomTerminal()){
+//					int b = (int) parseTerminal().getValue();
+//					r %= 256;
+//					g %= 256;
+//					b %= 256;
+//					return new Color(r,g,b);
+//				}
+//			}
+//		}
 
 		// Try 1 word colors
 		if (RGB.hasColor(peekNext())) {
@@ -610,6 +616,7 @@ public class Parser {
 	public Terminal parseRandomTerminal(){
 		if (getNext("random")) {
 			skipNext("number");
+			
 			// Only setting the maximum value, min is assumed to be 0
 			if (getNext("to") && peekExpression()) {
 				Expression max = parseExpression();
@@ -623,7 +630,7 @@ public class Parser {
 			if (peekExpression()) {
 				Expression first = parseExpression();
 				
-				if (getNext("and") && peekExpression()) {
+				if (getNext("and", "to") && peekExpression()) {
 					Expression second = parseExpression();
 					return new RandomTerminal(first, second);
 				}

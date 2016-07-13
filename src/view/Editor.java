@@ -34,8 +34,9 @@ public class Editor extends JPanel implements KeyListener {
 	private Pseudocode pseudocode;
 	
 	// For formatting
-	private static final String FONT = "Menlo";
-	private static final int FONT_SIZE = 18;
+	public static final String FONT = "Menlo";
+	public static final int FONT_SIZE = 18;
+	
 	private static final Color background = new Color(248, 248, 248);
 	private static final Color foreground = new Color(20, 20, 20);
 	private static final Color keyword = new Color(51, 102, 153);
@@ -72,17 +73,28 @@ public class Editor extends JPanel implements KeyListener {
 		area.setText(text);
 	}
 	
+	public String getText() {
+		return area.getText();
+	}
+	
 	public void format() {
 		StyledDocument document = area.getStyledDocument();
 		document.setCharacterAttributes(0, area.getText().length(), area.getStyle("base"), true);
 		
+		// Position in the formatted document
 		int position = 0;
+		// Get each line of text in the textarea
 		String[] lines = area.getText().split("\n");
+		
+		// Go to every line
 		for (String line : lines) {
+			// Split the line into tokens
 			String[] tokens = lexer.lex(line, true);
 			boolean firstToken = true;
 			
+			// Go to each token
 			for (int i = 0 ; i < tokens.length ; i++) {
+				// Tabs get ignored
 				if (tokens[i].equals("\t")) {
 					position++;
 					continue;
@@ -91,17 +103,25 @@ public class Editor extends JPanel implements KeyListener {
 				String token = tokens[i];
 				String style = null;
 				
+				// Conditions to determine a special syntax highlighting style
+				// TODO: add more styles
 				if (firstToken && Constant.keyword.contains(token))
 					style = "keyword";
 				else if (Constant.operator.contains(token)) 
 					style = "operator";
+				else if (token.matches("\\d+(|\\.\\d*)"))
+					style = "number";
 				
+				// If a style was found, then apply it to this section
 				if (style != null) {
 					document.setCharacterAttributes(position, token.length(), area.getStyle(style), true);
 				}
+				
+				// Advanced the position to the next token
 				position += token.length();
 				firstToken = false;
 			}
+			// Account for the newline character
 			position++;
 		}
 	}

@@ -20,4 +20,6 @@ forever
 	
 	if x < 20
 		invert dx
-		
+	
+	if distance from x, y to mouse x, mouse y < 40
+		invert dy

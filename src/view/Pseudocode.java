@@ -1,22 +1,13 @@
 package view;
 
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 import instruction.Block;
 import parser.Parser;
-
-import com.apple.eawt.*;
 
 /**
  * 
@@ -99,5 +90,9 @@ public class Pseudocode extends JFrame {
 	public void updateText(String text) {
 		editor.updateText(text);
 		update(text);
+	}
+	
+	public String getText() {
+		return editor.getText();
 	}
 }
