@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import expression.Expression;
 import expression.SymbolTerminal;
+import view.Console;
 
 /**
  * Represents a block of pseudocode instructions.
@@ -22,6 +23,9 @@ public class Block extends Instruction {
 	private HashMap <String, Double> symbol;
 	private HashMap <String, String> stringSymbol;
 	private Block parent;
+	
+	// The console output view.
+	private Console console;
 	
 	// A list of instructions in the block.
 	private ArrayList <Instruction> instructions;
@@ -53,6 +57,15 @@ public class Block extends Instruction {
 			symbol = parent.symbol;
 			indentLevel = parent.indentLevel + 1;
 		}
+	}
+	
+	/**
+	 * Sets the console output view of this block to the given console.
+	 * 
+	 * @param console - the Console object representing the console output JFrame
+	 */
+	public void setConsole(Console console) {
+		this.console = console;
 	}
 	
 	/**
@@ -263,5 +276,19 @@ public class Block extends Instruction {
 	 */
 	public void assign(String symbol, double value) {
 		this.symbol.put(symbol, value);
+	}
+	
+	/**
+	 * Prints the given value to the console.
+	 */
+	public void print(String output) {
+		console.print(output);
+	}
+	
+	/**
+	 * Prints the given error message to the console.
+	 */
+	public void error(String message) {
+		console.error(message);
 	}
 }

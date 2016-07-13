@@ -731,7 +731,7 @@ public class Parser {
 	 * @return true if the next token is a string terminal, false otherwise.
 	 */
 	public boolean peekStringTerminal() {
-		return peekNext().startsWith("\"") && peekNext().endsWith("\"");
+		return peekNext().length() >= 2 && peekNext().startsWith("\"") && peekNext().endsWith("\"");
 	}
 
 	/**

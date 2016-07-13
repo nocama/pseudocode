@@ -3,6 +3,7 @@ package instruction;
 import java.awt.Graphics;
 
 import expression.Expression;
+import expression.StringTerminal;
 
 /**
  * 
@@ -29,7 +30,13 @@ public class Print extends Instruction {
 	 * When this instruction is executed, print the expression to standard output.
 	 */
 	public void execute(Graphics graphics, Block algorithm) {
-		System.out.println(expression.evaluate(algorithm));
+		// Print the string value of a StringTerminal expression
+		if (expression instanceof StringTerminal)
+			algorithm.print(((StringTerminal) expression).getStringValue());
+		
+		// Otherwise print the evaluated value of the expression.
+		else 
+			algorithm.print("" + expression.evaluate(algorithm));
 	}
 	
 	/**

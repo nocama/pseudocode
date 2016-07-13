@@ -39,6 +39,7 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 	
 	// The underlying algorithm being run by this output view.
 	private Block block;
+	private Console console;
 	
 	// Flag for resetting the output view.
 	private boolean firstReset = true;
@@ -67,13 +68,14 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 	
 	/**
 	 * Constructs an OutputPanel object that will be displayed in the given PseudocodeFrame frame.
-	 * @param frame - the frame that the output panel would be placed in
+	 * @param pseudocode - the frame that the output panel would be placed in
 	 */
-	public Interpreter(Pseudocode frame) {
-		this.pseudocode = frame;
+	public Interpreter(Pseudocode pseudocode) {
+		this.pseudocode = pseudocode;
+		console = new Console(pseudocode);
 		
 		// Sets the width and height of the panel
-		setSize(frame.getWidth() / 2, frame.getHeight());
+		setSize(pseudocode.getWidth() / 2, pseudocode.getHeight());
 
 		// Create a timer that continuously repaints the window
 		Timer t = new Timer();
@@ -143,6 +145,8 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 	public void interpret(Block block) {
 		// Initialize color palette.
 		RGB.initialize();
+		block.setConsole(console);
+		console.reset();
 
 		// Cancel repaint for equivalent program
 		if (! alwaysRepaint && this.block != null && this.block.equals(block))
