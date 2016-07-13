@@ -11,7 +11,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -263,7 +265,12 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 		else if (command.equals("Quit")) quit();
 		
 		// Mesh commands
-		else if (command.equals("Start Mesh")) pseudocode.interpreter.startMesh();
+		else if (command.equals("Start Mesh")) {
+			pseudocode.interpreter.startMesh();
+			try {
+				mesh.setText(InetAddress.getLocalHost().getHostAddress());
+			} catch (UnknownHostException e) {}
+		}
 		else if (command.equals("Join Mesh")) pseudocode.interpreter.joinMesh();
 		
 		// Command to open an example

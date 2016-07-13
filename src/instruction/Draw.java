@@ -21,6 +21,7 @@ public class Draw extends Instruction {
 	Expression width;
 	Expression height;
 	Color color;
+	boolean randomColor = false;
 	
 	/**
 	 * Constructs a drawing instruction from the given String description of the shape to be drawn.
@@ -122,6 +123,13 @@ public class Draw extends Instruction {
 		this.color = color;
 	}
 	
+	/**
+	 * Sets the color of this shape to a random color.
+	 */
+	public void setRandomColor(boolean randomColor) {
+		this.randomColor = randomColor;
+	}
+	
 	@Override
 	public void execute(Graphics g, Block algorithm) {
 		// Evaluate expressions for this shape
@@ -131,7 +139,11 @@ public class Draw extends Instruction {
 		double height = (this.height != null) ? this.height.evaluate(algorithm) : DEFAULT_SIZE;
 		
 		// Set the drawing color
-		g.setColor(color);
+		if (randomColor)
+			g.setColor(new Color((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256)));
+		else
+			g.setColor(color);
+		
 		// Draw the corresponding shape.
 		switch (type) {
 		case Circle:

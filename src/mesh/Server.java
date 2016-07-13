@@ -7,11 +7,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+import view.Interpreter;
+
 /**
  * Thread for a server listening on the given port.
  */
 public class Server extends Thread {
+	private Interpreter interpreter;
 	private int port;
+	
 	private ServerSocket master;
 	private ArrayList <ServerClient> clients;
 	private static ConcurrentHashMap <String, Double> cache;
@@ -20,7 +24,8 @@ public class Server extends Thread {
 	 * Initialize this thread to listen on the given port.
 	 * @param port
 	 */
-	public Server(int port) {
+	public Server(Interpreter interpreter, int port) {
+		this.interpreter = interpreter;
 		this.port = port;
 	}
 

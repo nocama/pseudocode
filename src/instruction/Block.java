@@ -255,4 +255,13 @@ public class Block extends Instruction {
 	public void assign(String symbol, Expression expression) {
 		this.symbol.put(symbol, expression.evaluate(this));
 	}
+	
+	/**
+	 * Assigns the given symbol name to the given numeric value.
+	 * @param symbol - the symbol name
+	 * @param value - value to assign to the symbol
+	 */
+	public void assign(String symbol, double value) {
+		this.symbol.put(symbol, value);
+	}
 }

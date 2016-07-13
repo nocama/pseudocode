@@ -3,8 +3,6 @@ package expression;
 import java.awt.Color;
 import java.util.HashMap;
 
-import datastructure.Trie;
-
 public class RGB {
 	
 	// Stores a Trie to quickly map String colors to their Color object.

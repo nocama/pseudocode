@@ -24,6 +24,7 @@ public class Parser {
 	// The list of shapes that can be drawn.
 	private String[] drawType = { "circle", "square", "rectangle", "oval", "line", "background" };
 	private String[] builtInExpression = { "mouse", "random" };
+	private String[] specialKeys = {"up", "down", "left", "right", "space"};
 	private static HashSet <String> reservedWords;
 
 	/**
@@ -152,8 +153,8 @@ public class Parser {
 			return parseAssign();
 		}
 
-		// Increment, decrement, change
-		else if (peekNext("increment", "decrement", "change")) {
+		// Increment, decrement, change, increase, decrease
+		else if (peekNext("increment", "decrement", "change", "increase", "decrease")) {
 			return parseIncrement();
 		}
 
@@ -198,7 +199,7 @@ public class Parser {
 	}
 
 	public Instruction parseElseIf(Block parentBlock) {
-		Expression condition = parseExpression();
+		Expression condition = parseExpression(true);
 		if (condition != null) {
 			Block elseIfBlock = parseBlock(parentBlock);
 			return new ElseIfBlock(condition, elseIfBlock);
@@ -207,7 +208,7 @@ public class Parser {
 	}
 
 	public Instruction parseIf(Block parentBlock) {
-		Expression condition = parseExpression();
+		Expression condition = parseExpression(true);
 		if (condition != null) {
 			Block ifBlock = parseBlock(parentBlock);
 			return new IfBlock(condition, ifBlock);
@@ -235,16 +236,31 @@ public class Parser {
 
 	public Instruction parseIncrement() {
 		// The direction in which the change will happen (increment and change are both positive)
-		int direction = (getNext().equals("decrement")) ? -1 : 1;
+		int direction = (getNext("decrement", "decrease")) ? -1 : 1;
+		if (direction == 1)
+			getNext("increase", "increment", "change");
 
 		if (peekSymbolTerminal()) {
 			SymbolTerminal symbol = parseSymbolTerminal();
+			Increment increment;
 
 			// Give an explicit amount to increment by
 			if (getNext("by") && peekExpression())
-				return new Increment(symbol, parseExpression());
+				increment = new Increment(symbol, parseExpression());
 			else 
-				return new Increment(symbol, new Terminal(direction));
+				increment = new Increment(symbol, new Terminal(direction));
+			
+			// Conditionally change the symbol
+			if (getNext("if")) {
+				Expression condition = parseExpression(true);
+				if (condition != null) {
+					Block incrementBlock = new Block();
+					incrementBlock.add(increment);
+					return new IfBlock(condition, incrementBlock);
+				}
+				return increment;
+			}
+			else return increment;
 		}
 		return null;
 	}
@@ -274,13 +290,18 @@ public class Parser {
 
 		skipNext("a", "an");
 
-		if (getNext("big"))
-			size = Constant.BIG;
-		if (getNext("small"))
-			size = Constant.SMALL;
+		if (getNext("big")) size = Constant.BIG;
+		if (getNext("small")) size = Constant.SMALL;
 
 		// Try parsing a color
 		Color color = parseColor();
+		boolean randomColor = false;
+		
+		// Random colors
+		if (color == null && getNext("random color", "randomly colored")) {
+			randomColor = true;
+		}
+		
 		// Keep looking for a drawing type until the end of the current instruction
 		while (! atDelimiter() && ! peekNext(drawType))
 			skipNext();
@@ -293,9 +314,12 @@ public class Parser {
 		else if (peekNext(drawType)) {
 			Draw draw = new Draw(getNext());
 
+			// Set the color of the shape to be drawn
 			if (color != null)
 				draw.setColor(color);
+			draw.setRandomColor(randomColor);
 
+			// Set the size of the circle
 			if (size != null)
 				draw.setSize(size);
 
@@ -319,11 +343,17 @@ public class Parser {
 			else while (peekNext("at", "with") && ! atDelimiter()) {
 				// Set the coordinates with the "at" keyword
 				if (getNext("at")) {
-					// Try to parse one number
-					if (peekExpression()) draw.setX(parseExpression());
-					skipNext(",");
-					// If another number can be parsed
-					if (peekExpression()) draw.setY(parseExpression());
+					if (getNext("the mouse")) {
+						draw.setX(new SymbolTerminal("mousex"));
+						draw.setY(new SymbolTerminal("mousey"));
+					}
+					else {
+						// Try to parse one number
+						if (peekExpression()) draw.setX(parseExpression());
+						skipNext(",");
+						// If another number can be parsed
+						if (peekExpression()) draw.setY(parseExpression());
+					}
 				}
 				// Set properties with the "with" keyword
 				else while (getNext("with")) {
@@ -438,7 +468,7 @@ public class Parser {
 	 * Parses an operator.
 	 * @return
 	 */
-	public Operator parseOperator() {
+	public Operator parseOperator(boolean logic) {
 		// Math operators
 		if (getNext("+")  || getNext("plus")) return Operator.Add;
 		if (getNext("-")  || getNext("minus")) return Operator.Subtract;
@@ -446,31 +476,32 @@ public class Parser {
 		if (getNext("/")  || getNext("divided by") || getNext("over")) return Operator.Divide;
 
 		// Logic operators
-		if (getNext("&&") || getNext("and")) return Operator.And;
-		if (getNext("||") || getNext("or")) return Operator.Or;
+		if (logic) {
+			if (getNext("&&") || getNext("and")) return Operator.And;
+			if (getNext("||") || getNext("or")) return Operator.Or;
 
-		// Equality testing
-		if (getNext("==") || getNext("is")) return Operator.Equal;
-		if (getNext("!=") || getNext("is not")) return Operator.NotEqual;
-
-		// Comparison operators
-		if (getNext(">")  || getNext("greater than") || getNext("is greater than")) return Operator.GreaterThan;
-		if (getNext("<")  || getNext("less than") || getNext("is less than")) return Operator.LessThan;
-		if (getNext(">=") || getNext("greater than or equal to") || getNext("is greater than or equal to")) return Operator.GreaterThanOrEqual;
-		if (getNext("<=") || getNext("less than or equal to") || getNext("is less than or equal to")) return Operator.LessThanOrEqual;
+			// Equality testing
+			if (getNext("==") || getNext("is")) return Operator.Equal;
+			if (getNext("!=") || getNext("is not")) return Operator.NotEqual;
+	
+			// Comparison operators
+			if (getNext(">")  || getNext("greater than") || getNext("is greater than")) return Operator.GreaterThan;
+			if (getNext("<")  || getNext("less than") || getNext("is less than")) return Operator.LessThan;
+			if (getNext(">=") || getNext("greater than or equal to") || getNext("is greater than or equal to")) return Operator.GreaterThanOrEqual;
+			if (getNext("<=") || getNext("less than or equal to") || getNext("is less than or equal to")) return Operator.LessThanOrEqual;
+		}
 		return null;
 	}
 
 	public boolean peekExpression() {
-		return peekNumberTerminal() || peekNext("(", ")") || peekExistingSymbolTerminal() 
-				|| peekNext("mouse") || peekNext("random");
+		return peekTerminal() || peekNext("(", ")");
+	}
+	
+	public Expression parseExpression() {
+		return parseExpression(false);
 	}
 
-	public Expression parseExpression() {
-		if (getNext("mouse")) {
-			return parseMouseTerminal();
-		}
-
+	public Expression parseExpression(boolean logic) {
 		if (getNext("("))
 			return parseExpression();
 		else {
@@ -479,15 +510,15 @@ public class Parser {
 			if (peekNext(")"))
 				return value;
 
-			Operator op = parseOperator();
+			Operator op = parseOperator(logic);
 			if (op != null)
-				return parseExpressionTail(value, op);
+				return parseExpressionTail(value, op, logic);
 
 			return value;
 		}
 	}
 
-	public Expression parseExpressionTail(Expression head, Operator operator) {
+	private Expression parseExpressionTail(Expression head, Operator operator, boolean logic) {
 
 		// Start parsing a parenthesized expression from the expression parsing routine
 		if (getNext("("))
@@ -498,19 +529,19 @@ public class Parser {
 
 		// If a tail to this expression was parsed
 		if (tail != null) {
-			Operator nextOperator = parseOperator();
+			Operator nextOperator = parseOperator(logic);
 			if (nextOperator != null) {
 				if (Expression.getPrecedence(operator) < Expression.getPrecedence(nextOperator))
-					return new Expression(head, operator, parseExpressionTail(tail, nextOperator));
+					return new Expression(head, operator, parseExpressionTail(tail, nextOperator, logic));
 				else
-					return parseExpressionTail(new Expression(head, operator, tail), nextOperator);
+					return parseExpressionTail(new Expression(head, operator, tail), nextOperator, logic);
 			}
 			else return new Expression(head, operator, tail);
 		}
 		// Prevents the text "and" for combining instructions to conflict with expression "and"
-		//		else if (operator == Operator.And) {
-		//			goBack();
-		//		}
+		else if (operator == Operator.And) {
+			index--;
+		}
 
 		// Returns the expression head
 		return head;
@@ -536,7 +567,10 @@ public class Parser {
 		return  peekNumberTerminal() ||
 				peekStringTerminal() ||
 				peekExistingSymbolTerminal() ||
-				peekMouseTerminal()||peekRandomTerminal();
+				peekMouseTerminal()||
+				peekRandomTerminal() ||
+				peekDistanceTerminal() ||
+				peekKeyTerminal();
 	}
 
 	/**
@@ -552,6 +586,10 @@ public class Parser {
 			return parseNumberTerminal();
 		if (peekStringTerminal())
 			return parseStringTerminal();
+		if (peekKeyTerminal())
+			return parseKeyTerminal();
+		if (peekDistanceTerminal())
+			return parseDistanceTerminal();
 		if (peekExistingSymbolTerminal())
 			return parseSymbolTerminal();
 		return null;
@@ -562,7 +600,7 @@ public class Parser {
 	 * @return
 	 */
 	public boolean peekRandomTerminal(){
-		return peekNext("random number");
+		return peekNext("random");
 	}
 	
 	/*
@@ -570,40 +608,63 @@ public class Parser {
 	 * @return random number
 	 */
 	public Terminal parseRandomTerminal(){
-		getNext("random number");
-		if(peekNext("between")){
-			skipNext("between");
-			
-			if (peekExpression()){
-				
-				Expression min = parseExpression();
-				if(getNext("and")){
-					
-					if(peekExpression()){
-						Expression max = parseExpression();
-						
-						if( min == null || max == null)
-							return null;
-						
-						return new RandomTerminal(min,max);
-					}
-				}
-				
-
-			}
-		}
-		else if(peekNext("to")){
-			getNext("to");
-			if(peekExpression()){
+		if (getNext("random")) {
+			skipNext("number");
+			// Only setting the maximum value, min is assumed to be 0
+			if (getNext("to") && peekExpression()) {
 				Expression max = parseExpression();
 				return new RandomTerminal(max);
 			}
+			
+			// skip linking words to range
+			skipNext("between", "from");
+			
+			// If there is a range defined
+			if (peekExpression()) {
+				Expression first = parseExpression();
+				
+				if (getNext("and") && peekExpression()) {
+					Expression second = parseExpression();
+					return new RandomTerminal(first, second);
+				}
+				else return new RandomTerminal(first);
+			}
+			else return new RandomTerminal();
 		}
-		else{
-			return new RandomTerminal();
-		}	
-		
 		return null;
+	}
+	
+	public boolean peekDistanceTerminal() {
+		return peekNext("distance");
+	}
+	
+	public Terminal parseDistanceTerminal() {
+		Expression x1, y1, x2, y2;
+		getNext("distance");
+		skipNext("from");
+		if (peekExpression())
+			x1 = parseExpression();
+		else return null;
+		
+		skipNext(",");
+		
+		if (peekExpression())
+			y1 = parseExpression();
+		else return null;
+		
+		skipNext("to");
+		
+		if (peekExpression())
+			x2 = parseExpression();
+		else return null;
+		
+		skipNext(",");
+		
+		if (peekExpression())
+			y2 = parseExpression();
+		else return null;
+		
+		return new DistanceTerminal(x1, y1, x2, y2);
 	}
 
 	/**
@@ -673,9 +734,36 @@ public class Parser {
 	 */
 	public Terminal parseStringTerminal() {
 		String next = getNext();
-		return new StringTerminal(next.substring(1, next.length() - 1));
+		next = next.substring(1, next.length() - 1);
+		
+		if (getNext("pressed"))
+			return new KeyTerminal(next);
+		else if (getNext("released"))
+			return new KeyTerminal(next, false);
+		else
+			return new StringTerminal(next);
 	}
-
+	
+	/**
+	 * Returns true if a key can be parsed.
+	 * @return
+	 */
+	public boolean peekKeyTerminal() {
+		return peekNext(specialKeys);
+	}
+	
+	/**
+	 * Parses a key terminal.
+	 */
+	public Terminal parseKeyTerminal() {
+		String next = getNext();
+		if (getNext("pressed"))
+			return new KeyTerminal(next);
+		else if (getNext("released"))
+			return new KeyTerminal(next, false);
+		else
+			return new KeyTerminal(next);
+	}
 
 	/**
 	 * Returns true if any of the given Strings match the tokens at the current

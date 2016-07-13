@@ -80,12 +80,18 @@ public class Editor extends JPanel implements KeyListener {
 		String[] lines = area.getText().split("\n");
 		for (String line : lines) {
 			String[] tokens = lexer.lex(line, true);
+			boolean firstToken = true;
 			
 			for (int i = 0 ; i < tokens.length ; i++) {
+				if (tokens[i].equals("\t")) {
+					position++;
+					continue;
+				}
+				
 				String token = tokens[i];
 				String style = null;
 				
-				if (i == 0 && Constant.keyword.contains(token))
+				if (firstToken && Constant.keyword.contains(token))
 					style = "keyword";
 				else if (Constant.operator.contains(token)) 
 					style = "operator";
@@ -94,6 +100,7 @@ public class Editor extends JPanel implements KeyListener {
 					document.setCharacterAttributes(position, token.length(), area.getStyle(style), true);
 				}
 				position += token.length();
+				firstToken = false;
 			}
 			position++;
 		}

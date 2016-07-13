@@ -1,16 +1,22 @@
 package view;
 
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
+import javax.swing.UIManager;
 import instruction.Block;
 import parser.Parser;
+
+import com.apple.eawt.*;
 
 /**
  * 
@@ -47,6 +53,9 @@ public class Pseudocode extends JFrame {
 		setSize(SIZE * 2, SIZE + 50);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setJMenuBar(new PseudocodeMenuBar(this));
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {}
 		
 		// Creates a JPanel to contain the editor and output panel.
 		JPanel container = new JPanel();
