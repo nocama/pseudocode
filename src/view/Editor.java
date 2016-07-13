@@ -58,7 +58,7 @@ public class Editor extends JPanel implements KeyListener {
 		
 		// Create a text area in a scroll pane 
 		area = new JTextPane();
-		area.setFont(new Font("Menlo", 0, 18));
+		area.setFont(new Font(FONT, 0, FONT_SIZE));
 		area.setBackground(background);
 		initializeFormatting();
 		

@@ -23,7 +23,7 @@ public class Parser {
 
 	// The list of shapes that can be drawn.
 	private String[] drawType = { "circle", "square", "rectangle", "oval", "line", "background" };
-	private String[] builtInExpression = { "mouse", "random" };
+	private String[] builtInExpression = { "mouse", "random", "square root", "absolute value" };
 	private String[] specialKeys = {"up", "down", "left", "right", "space"};
 	private static HashSet <String> reservedWords;
 
@@ -569,14 +569,15 @@ public class Parser {
 		return new SymbolTerminal("mouseclicked");
 	}
 	
+	/**
+	 * Returns true if the next token is a terminal value.
+	 * @return
+	 */
 	public boolean peekTerminal() {
 		return  peekNumberTerminal() ||
 				peekStringTerminal() ||
 				peekExistingSymbolTerminal() ||
-				peekMouseTerminal()||
-				peekRandomTerminal() ||
-				peekDistanceTerminal() ||
-				peekKeyTerminal();
+				peekNext(builtInExpression);
 	}
 
 	/**

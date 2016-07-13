@@ -57,7 +57,7 @@ public class PseudocodeMenuBar extends JMenuBar implements ActionListener {
 
 	// The FileFilter object that is used to filter non-pseudocode files from being opened.
 	private FileFilter pseudocodeFilter = new FileFilter() {
-
+		
 		/**
 		 * Returns true if the given File object represents a valid pseudocode file.
 		 */
