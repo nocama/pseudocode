@@ -132,7 +132,6 @@ public class Editor extends JPanel implements KeyListener {
 	 */
 	private void initializeFormatting() {
 		lexer = new Lexer();
-		
 		addStyle("base", foreground, false, false);
 		addStyle("keyword", keyword, true, false);
 		addStyle("attribute", attribute, false, false);

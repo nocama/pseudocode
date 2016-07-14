@@ -30,7 +30,7 @@ The steps of a parser
 - [√] Random numbers
 - [√] Random color
 - [ ] Commenting in the code (`// comment`) - add to Lexer.java, not to Parser.java
-- [ ] Square root and absolute value (`square root of x`, `absolute value of x`)
+- [√ ] Square root and absolute value (`square root of x`, `absolute value of x`)
 - [√] Distance function (`distance from x, y to a, b`)
 - [ ] Mesh with other
 - [ ] Fix mouse clicked event
