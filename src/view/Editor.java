@@ -37,11 +37,15 @@ public class Editor extends JPanel implements KeyListener {
 	public static final String FONT = "Menlo";
 	public static final int FONT_SIZE = 18;
 	
+	//Create the colors for the various types
 	private static final Color background = new Color(248, 248, 248);
 	private static final Color foreground = new Color(20, 20, 20);
-	private static final Color keyword = new Color(51, 102, 153);
+	private static final Color keyword = new Color(41,128,185);
 	private static final Color attribute = new Color(51, 102, 153);
-	private static final Color operator = new Color(221, 17, 153);
+	private static final Color operator = new Color(155, 89, 182);
+	private static final Color number = new Color(39, 174, 96);
+	private static final Color property = new Color(226, 106, 106);
+	private static final Color shape = new Color(245, 171, 53);
 	
 	private static Lexer lexer;
 	
@@ -106,17 +110,21 @@ public class Editor extends JPanel implements KeyListener {
 				// Conditions to determine a special syntax highlighting style
 				// TODO: add more styles
 				if (firstToken && Constant.keyword.contains(token))
-					style = "keyword";
+					style = "keyword"; 
 				else if (Constant.operator.contains(token)) 
 					style = "operator";
 				else if (token.matches("\\d+(|\\.\\d*)"))
 					style = "number";
+				else if (Constant.property.contains(token))
+					style = "property";
+				else if(Constant.shape.contains(token))
+					style = "shape";
 				
 				// If a style was found, then apply it to this section
 				if (style != null) {
 					document.setCharacterAttributes(position, token.length(), area.getStyle(style), true);
 				}
-				
+					
 				// Advanced the position to the next token
 				position += token.length();
 				firstToken = false;
@@ -125,8 +133,7 @@ public class Editor extends JPanel implements KeyListener {
 			position++;
 		}
 	}
-	
-	/**
+		/**
 	 * Initializes the styles used by the editor to format text.
 	 * @see NXTalkFormatter
 	 */
@@ -136,9 +143,10 @@ public class Editor extends JPanel implements KeyListener {
 		addStyle("base", foreground, false, false);
 		addStyle("keyword", keyword, true, false);
 		addStyle("attribute", attribute, false, false);
-		addStyle("number", Color.GREEN, false, false);
-		addStyle("operator", Color.RED, false, false);
-		//addStyle("operator", Color.RED, false, false);
+		addStyle("number", number, false, false);
+		addStyle("operator", operator, false, false);
+		addStyle("property", property, false, false);
+		addStyle("shape",shape,false,false);
 	}
 	
 	private void addStyle(String name, Color color, boolean bold, boolean italic) {

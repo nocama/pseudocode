@@ -357,6 +357,8 @@ public class Parser {
 				}
 				// Set properties with the "with" keyword
 				else while (getNext("with")) {
+					//skip the next a
+					skipNext("a");
 					// Keep parsing properties
 					while (peekNext("width", "height", "radius", "size", "diameter")) {
 						// If the next token is setting the width

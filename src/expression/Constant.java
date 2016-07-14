@@ -63,4 +63,9 @@ public class Constant {
 		add("is");
 		add("!=");
 	}};
+	public static HashSet <String> shape = new  HashSet <String> (){{
+		add("circle");
+		add("square");
+		add("line");
+	}};
 }
