@@ -504,7 +504,61 @@ public class Parser {
 	public boolean peekExpression() {
 		return peekTerminal() || peekNext("(", ")");
 	}
-	
+	/** Checks if the token is the word square
+	 * @return if the token contains the word square
+	 */
+	public boolean peekSquareRootTerminal(){
+		return peekNext("square");
+	}
+	/**This function calls the square root terminal if needed
+	 * to find the square root of a number
+	 * @return A square root terminal of the inputed number, no number, or null
+	 */
+	public Terminal parseSquareRootTerminal(){
+		//Checking if square root is found and skipping to the value inputed
+		if(getNext("square root")){
+			skipNext("of");
+			// Calling the SquareRootTerminal Function of the input
+			if(peekExpression()){
+				Expression num = parseExpression();
+				return new SquareRootTerminal(num);
+				
+			}else {
+				//Calling the SquareRootTerminal on 0 because no number is inputed
+				return new SquareRootTerminal();
+			}
+			
+		}
+		
+		return null;
+		
+	}
+	/** This boolean checks if the token contains absolute
+	 * 
+	 * @return if the token contains absolute 
+	 */
+	public boolean peekAbsoluteValueTerminal(){
+		return peekNext("absolute");
+	}
+	/**This function calls the Absolute Value terminal if needed
+	 * to find the square root of a number
+	 * @return An Absolute Value terminal of the inputed number, no number, or null
+	 */
+	public Terminal parseAbsoluteValueTerminal(){
+		//Checking if absolute value is found and skipping to the value inputed
+		if(getNext("absolute value")){
+			skipNext("of");
+			// Calling the SquareRootTerminal Function of the input
+			if(peekExpression()){
+				Expression num = parseExpression();
+				return new AbsoluteValueTerminal(num);
+			}else {
+				return new AbsoluteValueTerminal();
+			}
+			
+		}
+		return null;
+	}
 	public Expression parseExpression() {
 		return parseExpression(false);
 	}
@@ -558,7 +612,7 @@ public class Parser {
 	public boolean peekMouseTerminal() {
 		return peekNext("mouse");
 	}
-
+	
 	public Terminal parseMouseTerminal() {
 		getNext("mouse");
 		if (getNext("x"))
@@ -589,6 +643,12 @@ public class Parser {
 	public Terminal parseTerminal() {
 		if(peekRandomTerminal())
 			return parseRandomTerminal();
+		if(peekSquareRootTerminal()){
+			return parseSquareRootTerminal();
+		}
+		if(peekAbsoluteValueTerminal()){
+			return parseAbsoluteValueTerminal();
+		}
 		if (peekMouseTerminal())
 			return parseMouseTerminal();
 		if (peekNumberTerminal())

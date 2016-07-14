@@ -1,5 +1,4 @@
 /.DS_Store
-/datastructure/
 /example/
 /expression/
 /instruction/
@@ -7,4 +6,3 @@
 /parser/
 /test/
 /view/
-/image/
