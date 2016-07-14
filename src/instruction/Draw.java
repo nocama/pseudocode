@@ -2,6 +2,12 @@ package instruction;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 import expression.Expression;
 import expression.Operator;
@@ -12,7 +18,7 @@ public class Draw extends Instruction {
 	private static final double DEFAULT_SIZE = 50;
 	
 	private enum Shape {
-		Circle, Square, Oval, Rectangle, Line
+		Circle, Square, Oval, Rectangle, Line, Image
 	};
 	
 	Shape type;
@@ -22,12 +28,14 @@ public class Draw extends Instruction {
 	Expression height;
 	Color color;
 	boolean randomColor = false;
+	BufferedImage image = null;
 	
 	/**
 	 * Constructs a drawing instruction from the given String description of the shape to be drawn.
 	 * @param name
+	 * @throws IOException 
 	 */
-	public Draw(String name) {
+	public Draw(String name){
 		if (name.equals("circle"))
 			type = Shape.Circle;
 		if (name.equals("square"))
@@ -38,6 +46,8 @@ public class Draw extends Instruction {
 			type = Shape.Rectangle;
 		if (name.equals("line"))
 			type = Shape.Line;
+		if (name.equals("image"))
+			type = Shape.Image;
 		
 		color = Color.BLACK;
 	}
@@ -129,6 +139,28 @@ public class Draw extends Instruction {
 	public void setRandomColor(boolean randomColor) {
 		this.randomColor = randomColor;
 	}
+	/**
+	*tries to read the image from the computer and if can't reads from web
+	*/
+	public void setImageLocation(String loc){
+		loc = loc.replace("\"", "");
+		// read image from computer
+		try {
+			this.image = ImageIO.read(new File(loc));
+		} catch (IOException e) {
+			// if fail read from url
+			try{
+				System.out.println(loc);
+				URL url = new URL(loc);
+				this.image = ImageIO.read(url);
+			} catch (IOException e1){
+				// if both fail tell the user that the image didn't load
+				System.out.println("no image");
+			}
+            
+			
+		}
+	}
 	
 	@Override
 	public void execute(Graphics g, Block algorithm) {
@@ -157,6 +189,9 @@ public class Draw extends Instruction {
 		case Line:
 			if (x != width || y != height)
 				g.drawLine((int) x, (int) y, (int) width, (int) height);
+		case Image:
+			g.drawImage(image, (int)x, (int)y, (int)width, (int)height, null);
+			break;
 		}
 	}
 	
@@ -202,6 +237,9 @@ public class Draw extends Instruction {
 
 	public boolean isLine() {
 		return type == Shape.Line;
+	}
+	public boolean isImage(){
+		return type == Shape.Image;
 	}
 	
 }

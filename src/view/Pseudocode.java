@@ -27,7 +27,6 @@ public class Pseudocode extends JFrame {
 	
 	// Display constants
 	public static final int SIZE = 600;
-	public static int windowCount = 0;
 	
 	// Editor and output panel reference.
 	Editor editor;
@@ -43,12 +42,8 @@ public class Pseudocode extends JFrame {
 	public Pseudocode() {
 		super("Pseudocode");
 		setSize(SIZE * 2, SIZE + 50);
-		
-		windowCount++;
-		setDefaultCloseOperation((windowCount > 1) ? JFrame.DISPOSE_ON_CLOSE : JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setJMenuBar(new PseudocodeMenuBar(this));
-		setLocationByPlatform(true);
-		
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {}
