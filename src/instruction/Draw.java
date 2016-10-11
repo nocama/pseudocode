@@ -2,6 +2,7 @@ package instruction;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.Arrays;
 
 import expression.Expression;
 import expression.Operator;
@@ -12,7 +13,7 @@ public class Draw extends Instruction {
 	private static final double DEFAULT_SIZE = 50;
 	
 	private enum Shape {
-		Circle, Square, Oval, Rectangle, Line
+		Circle, Square, Oval, Rectangle, Line, Polygon
 	};
 	
 	Shape type;
@@ -20,6 +21,7 @@ public class Draw extends Instruction {
 	Expression y;
 	Expression width;
 	Expression height;
+	Expression[][] vertices;
 	Color color;
 	boolean randomColor = false;
 	
@@ -38,7 +40,9 @@ public class Draw extends Instruction {
 			type = Shape.Rectangle;
 		if (name.equals("line"))
 			type = Shape.Line;
-		
+		if (name.equals("polygon"))
+			type = Shape.Polygon;
+
 		color = Color.BLACK;
 	}
 	
@@ -114,7 +118,15 @@ public class Draw extends Instruction {
 	public void setHeight(Expression height) {
 		this.height = height;
 	}
-	
+
+	/**
+	 * Sets the vertices of the shape (assuming it is a polygon)
+	 * @param vertices - vertices of the object
+	 */
+	public void setVertices(Expression[][] vertices) {
+		this.vertices = vertices;
+	}
+
 	/**
 	 * Sets the color of this shape.
 	 * @param color - a Color instance describing the color of this shape
@@ -137,7 +149,21 @@ public class Draw extends Instruction {
 		double y = (this.y != null) ? this.y.evaluate(algorithm) : 0;
 		double width = (this.width != null) ? this.width.evaluate(algorithm) : DEFAULT_SIZE;
 		double height = (this.height != null) ? this.height.evaluate(algorithm) : DEFAULT_SIZE;
-		
+		double[][] vertices = new double[0][0];
+		if (this.vertices != null) {
+			vertices = new double[this.vertices.length][2];
+			for (int i = 0; i < this.vertices.length; i++) {
+				if (this.vertices[i] != null) {
+					for (int j = 0; j < 2; j++) {
+						if (this.vertices[i][j] != null)
+							vertices[i][j] = this.vertices[i][j].evaluate(algorithm);
+					}
+				} else {
+					break;
+				}
+			}
+		}
+
 		// Set the drawing color
 		if (randomColor)
 			g.setColor(new Color((int) (Math.random() * 256), (int) (Math.random() * 256), (int) (Math.random() * 256)));
@@ -146,17 +172,27 @@ public class Draw extends Instruction {
 		
 		// Draw the corresponding shape.
 		switch (type) {
-		case Circle:
-		case Oval:
-			g.fillOval((int) (x - width / 2), (int) (y - height / 2), (int) width, (int) height);
-			break;
-		case Square:
-		case Rectangle:
-			g.fillRect((int) (x - width / 2), (int) (y - height / 2), (int) width, (int) height);
-			break;
-		case Line:
-			if (x != width || y != height)
-				g.drawLine((int) x, (int) y, (int) width, (int) height);
+			case Circle:
+			case Oval:
+				g.fillOval((int) (x - width / 2), (int) (y - height / 2), (int) width, (int) height);
+				break;
+			case Square:
+			case Rectangle:
+				g.fillRect((int) (x - width / 2), (int) (y - height / 2), (int) width, (int) height);
+				break;
+			case Line:
+				if (x != width || y != height)
+					g.drawLine((int) x, (int) y, (int) width, (int) height);
+			case Polygon:
+				int[] xpoints = new int[vertices.length];
+				int[] ypoints = new int[vertices.length];
+				for (int i = 0; i < vertices.length; i++) {
+					double[] vertex = vertices[i];
+					xpoints[i] = (int) vertex[0];
+					ypoints[i] = (int) vertex[1];
+				}
+				g.fillPolygon(xpoints, ypoints, vertices.length);
+				break;
 		}
 	}
 	
@@ -188,6 +224,7 @@ public class Draw extends Instruction {
 		case Oval: return "Window.out.oval(" + x + ", " + y + ", " + width + ", " + height + ");\n";
 		case Rectangle: return "Window.out.rectangle(" + x + ", " + y + ", " + width + ", " + height + ");\n";
 		case Line: return "Window.out.line(" + x + ", " + y + ", " + width + ", " + height + ");\n";
+		// TODO add case for polygon
 		}
 		return "";
 	}
@@ -203,5 +240,9 @@ public class Draw extends Instruction {
 	public boolean isLine() {
 		return type == Shape.Line;
 	}
-	
+
+	public boolean isPolygon() {
+		return type == Shape.Polygon;
+	}
+
 }
