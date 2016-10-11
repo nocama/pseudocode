@@ -21,9 +21,15 @@ The steps of a parser
 **everyone** - create examples in the `example` package as `My_Example.pseudo`
 
 - [ ] Get all keywords into expression/Constant.java
+<<<<<<< HEAD
 - [ ] Formatting the editor
 - [ ] Console for print output
 - [√] Add polygons (`draw a polygon from a, b to c, d to e, f`)
+=======
+- [√] Formatting the editor
+- [√] Console for print output
+- [ ] Add polygons (`draw a polygon from a, b to c, d to e, f`)
+>>>>>>> parent of 80d5f3f... Revert "images from web"
 - [ ] String interpolation (`print "the value of the variable is $variable and I am at $x, $y"`)
 - [ ] Draw an image from the web (`import "https://image.com/image.png" as xyz` ... `draw xyz at 300, 300`)
 - [ ] Ensure all files are commented
