@@ -66,9 +66,6 @@ public class Constant {
 	public static HashSet <String> shape = new  HashSet <String> (){{
 		add("circle");
 		add("square");
-		add("rectangle");
-		add("oval");
 		add("line");
-		add("image");
 	}};
 }
