@@ -25,7 +25,7 @@ public class Parser {
 	private Block rootBlock;			// The root block being parsed
 
 	// The list of shapes that can be drawn.
-	private String[] drawType = { "circle", "square", "rectangle", "oval", "line", "background", "polygon", "image" };
+	private String[] drawType = { "circle", "square", "rectangle", "oval", "line", "background", "polygon", "image", "text" };
 	private String[] builtInExpression = { "mouse", "random", "square root", "absolute value" };
 	private String[] specialKeys = {"up", "down", "left", "right", "space"};
 	private static HashSet <String> reservedWords;
@@ -350,6 +350,16 @@ public class Parser {
 				}
 			}
 
+			if (draw.isText()) {
+				String text = "";
+				while (!peekNext("at", "with") && hasNext())
+					text += getNext() + " ";
+				if (text.equals("")) {
+					text = null;
+				}
+				draw.setText(text);
+			}
+
 			if (draw.isPolygon()) {
 				if (getNext("from", "going from")) {
 					ArrayList<Expression[]> coordinates = new ArrayList<Expression[]>();
@@ -384,6 +394,7 @@ public class Parser {
 						if (peekExpression()) draw.setY(parseExpression());
 					}
 				}
+
 				// Set properties with the "with" keyword
 				else while (getNext("with")) {
 					//skip the next a
@@ -436,6 +447,9 @@ public class Parser {
 					// Skip and tokens and keep trying to check for "and with" instructions
 					//skipNext("and");
 				}
+
+
+
 			}
 
 			return draw;
