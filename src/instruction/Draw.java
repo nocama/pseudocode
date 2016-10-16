@@ -1,7 +1,6 @@
 package instruction;
 
-import java.awt.Color;
-import java.awt.Graphics;
+import java.awt.*;
 import java.util.Arrays;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -12,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import expression.Expression;
 import expression.Operator;
+import expression.StringTerminal;
 import expression.Terminal;
 
 public class Draw extends Instruction {
@@ -19,7 +19,7 @@ public class Draw extends Instruction {
 	private static final double DEFAULT_SIZE = 50;
 	
 	private enum Shape {
-		Circle, Square, Oval, Rectangle, Line, Polygon, Image
+		Circle, Square, Oval, Rectangle, Line, Polygon, Image, Text
 	};
 	
 	Shape type;
@@ -28,6 +28,7 @@ public class Draw extends Instruction {
 	Expression width;
 	Expression height;
 	Expression[][] vertices;
+	String text;
 	Color color;
 	boolean randomColor = false;
 	BufferedImage image = null;
@@ -52,6 +53,8 @@ public class Draw extends Instruction {
 			type = Shape.Polygon;
 		if (name.equals("image"))
 			type = Shape.Image;
+		if (name.equals("text"))
+			type = Shape.Text;
 		color = Color.BLACK;
 	}
 	
@@ -150,6 +153,15 @@ public class Draw extends Instruction {
 	public void setRandomColor(boolean randomColor) {
 		this.randomColor = randomColor;
 	}
+
+	/**
+	 * Sets the text of the shape
+	 * @param text
+	 */
+	public void setText(String text) {
+		this.text = text;
+	}
+
 	/**
 	*tries to read the image from the computer and if can't reads from web
 	*/
@@ -194,6 +206,7 @@ public class Draw extends Instruction {
 				}
 			}
 		}
+		String text = (this.text != null) ? this.text : "Text";
 
 		// Set the drawing color
 		if (randomColor)
@@ -226,6 +239,10 @@ public class Draw extends Instruction {
 				break;
 			case Image:
 				g.drawImage(image, (int)x, (int)y, (int)width, (int)height, null);
+				break;
+			case Text:
+				g.setFont(new Font("Arial", Font.PLAIN, (int) height));
+				g.drawString(text, (int) x, (int) y);
 				break;
 		}
 	}
@@ -281,6 +298,10 @@ public class Draw extends Instruction {
 
 	public boolean isImage(){
 		return type == Shape.Image;
+	}
+
+	public boolean isText() {
+		return type == Shape.Text;
 	}
 
 }

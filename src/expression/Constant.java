@@ -70,5 +70,7 @@ public class Constant {
 		add("oval");
 		add("line");
 		add("image");
+		add("polygon");
+		add("text");
 	}};
 }
