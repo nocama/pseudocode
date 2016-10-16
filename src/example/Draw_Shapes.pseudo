@@ -1,3 +1,5 @@
+draw a random color polygon from 10,10 to 300,60 to 200,100 to 150,300
+draw a green polygon from 20,20 to 290, 60 to 190, 90 to 150, 290
 draw a circle at 100, 100
 draw a blue square at 200, 200
 draw an orange rectangle at 400, 400 with width 200 height 100

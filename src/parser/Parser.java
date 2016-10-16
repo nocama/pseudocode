@@ -1,8 +1,11 @@
 package parser;
 
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
+import com.sun.deploy.util.ArrayUtil;
 import expression.*;
 import instruction.*;
 
@@ -22,7 +25,7 @@ public class Parser {
 	private Block rootBlock;			// The root block being parsed
 
 	// The list of shapes that can be drawn.
-	private String[] drawType = { "circle", "square", "rectangle", "oval", "line", "background","image" };
+	private String[] drawType = { "circle", "square", "rectangle", "oval", "line", "background", "polygon", "image" };
 	private String[] builtInExpression = { "mouse", "random", "square root", "absolute value" };
 	private String[] specialKeys = {"up", "down", "left", "right", "space"};
 	private static HashSet <String> reservedWords;
@@ -344,6 +347,25 @@ public class Parser {
 						skipNext(",");
 						if (peekExpression()) draw.setEndY(parseExpression());
 					}
+				}
+			}
+
+			if (draw.isPolygon()) {
+				if (getNext("from", "going from")) {
+					ArrayList<Expression[]> coordinates = new ArrayList<Expression[]>();
+					while (peekExpression()) {
+						Expression[] coords = new Expression[2];
+
+						if (peekNumberTerminal())
+							coords[0] = parseExpression();
+						skipNext(",", "and");
+						if (peekNumberTerminal())
+							coords[1] = parseExpression();
+						coordinates.add(coords);
+						skipNext("to");
+					}
+					Expression[][] values = coordinates.toArray(new Expression[2][coordinates.size()]);
+					draw.setVertices(values);
 				}
 			}
 
