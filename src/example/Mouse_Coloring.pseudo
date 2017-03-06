@@ -1,2 +1,6 @@
+#######################################
+# Mouse_Coloring.pseudo example       #
+# Drawing with mouse                  #
+#######################################
 forever
 	draw a red circle at mouse x, mouse y

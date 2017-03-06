@@ -46,6 +46,7 @@ public class Editor extends JPanel implements KeyListener {
 	private static final Color number = new Color(39, 174, 96);
 	private static final Color property = new Color(226, 106, 106);
 	private static final Color shape = new Color(245, 171, 53);
+	private static final Color comment = new Color(91, 91, 91);
 	
 	private static Lexer lexer;
 	
@@ -92,6 +93,11 @@ public class Editor extends JPanel implements KeyListener {
 		
 		// Go to every line
 		for (String line : lines) {
+			if (line.length() > 0 && line.contains("#")) {
+				document.setCharacterAttributes(position, line.length(), area.getStyle("comment"), true);
+				position+=line.length()+1;
+				continue;
+			}
 			// Split the line into tokens
 			String[] tokens = lexer.lex(line, true);
 			boolean firstToken = true;
@@ -146,6 +152,7 @@ public class Editor extends JPanel implements KeyListener {
 		addStyle("operator", operator, false, false);
 		addStyle("property", property, false, false);
 		addStyle("shape",shape,false,false);
+		addStyle("comment", comment, false, true);
 	}
 	
 	private void addStyle(String name, Color color, boolean bold, boolean italic) {

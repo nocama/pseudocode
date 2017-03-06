@@ -1,3 +1,7 @@
+#######################################
+# Simple_Branching.pseudo example     #
+#                                     #
+#######################################
 forever
 	if mouse x < 300
 		draw a red circle at the mouse

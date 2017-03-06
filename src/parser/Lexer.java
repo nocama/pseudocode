@@ -10,7 +10,8 @@ public class Lexer {
 	private static final int WORD = 1;
 	private static final int NUMBER = 2;
 	private static final int STRING = 3;
-	
+	private static final int COMMENT = 4;
+
 	// For number parsing.
 	boolean hasDecimal = false;
 	boolean hasQuote = false;
@@ -44,7 +45,12 @@ public class Lexer {
 			char c = text.charAt(index);
 			
 			// Space characters terminate current token.
-			if (state == STRING) {
+			if (state == COMMENT) {
+				if (c == '\n') {
+					state = 0;
+				}
+			}
+			else if (state == STRING) {
 				// If the escape flag was activated by an escape character
 				if (hasEscape) {
 					token.append(c);
@@ -100,6 +106,10 @@ public class Lexer {
 			}
 			// If this is a single character operator.
 			else if (isSingle(c)) {
+				if (c == '#') {
+					state = COMMENT;
+					continue;
+				}
 				pushToken();
 				pushToken(c);
 			}
@@ -131,7 +141,7 @@ public class Lexer {
 	}
 	
 	private boolean isSingle(char c) {
-		return c == '\n' || c == '\t' || c == ',' || c == '.' || isOperator(c);
+		return c == '\n' || c == '\t' || c == ',' || c == '.' || isOperator(c) || c == '#';
 	}
 	
 	private boolean isOperator(char c) {

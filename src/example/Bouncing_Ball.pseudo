@@ -1,17 +1,30 @@
+#######################################
+# Bouncing_Ball.pseudo example        #
+# Creates a bouncing ball             #
+#######################################
+# starting position
 set x to 300
 set y to 300
+
+# radius of ball
 set r to 30
+
+# initial speed of ball
 set dx to 5
 set dy to 3
 
 forever
+	# this will clear the screen
 	set the background to white
+	# draw the ball
 	draw a red circle at x, y with radius r
-	
+
+	# move the ball
 	change x by dx
 	change y by dy
 	increment dy
-	
+
+	# read controls
 	if x < r
 		set x to r
 		set dx to -1 * dx

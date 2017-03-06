@@ -73,4 +73,7 @@ public class Constant {
 		add("polygon");
 		add("text");
 	}};
+	public static HashSet <String> comment = new  HashSet <String> (){{
+		add("#");
+	}};
 }

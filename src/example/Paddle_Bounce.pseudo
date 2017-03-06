@@ -1,3 +1,7 @@
+#######################################
+# Paddle_Bounce.pseudo example        #
+# Bounce ball on paddle               #
+#######################################
 set x to 100
 set y to 100
 set dx to 5

@@ -1,3 +1,7 @@
+#######################################
+# Draw_Shapes.pseudo example          #
+# Demonstrates use of shape           #
+#######################################
 draw a random color polygon from 10,10 to 300,60 to 200,100 to 150,300
 draw a green polygon from 20,20 to 290, 60 to 190, 90 to 150, 290
 draw a circle at 100, 100

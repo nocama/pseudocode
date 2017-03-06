@@ -1,3 +1,7 @@
+#######################################
+# Etch_A_Sketch.pseudo example        #
+# Control etch a sketch               #
+#######################################
 set x1 to 100
 set y1 to height - 100
 

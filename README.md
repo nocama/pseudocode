@@ -35,7 +35,7 @@ The steps of a parser
 - [ ] Ensure all files are commented
 - [√] Random numbers
 - [√] Random color
-- [ ] Commenting in the code (`// comment`) - add to Lexer.java, not to Parser.java
+- [√] Commenting in the code (`# comment`) - add to Lexer.java, not to Parser.java
 <<<<<<< HEAD
 - [√] Square root and absolute value (`square root of x`, `absolute value of x`)
 =======

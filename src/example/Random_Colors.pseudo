@@ -1,2 +1,6 @@
+#######################################
+# Random_Colors.pseudo example        #
+# draws a random colored circle       #
+#######################################
 forever
 	draw a randomly colored circle at mouse x, mouse y

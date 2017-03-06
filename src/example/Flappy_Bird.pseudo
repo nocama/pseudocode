@@ -1,3 +1,7 @@
+#######################################
+# Flappy_Bird.pseudo example          #
+# flappy bird game                    #
+#######################################
 set x to 100
 set y to height / 2
 set dy to 0
