@@ -38,6 +38,9 @@ public class Constant {
 		add("else");
 		add("otherwise");
 		add("print");
+		add("to");
+		add("do");
+		add("run");
 	}};
 	
 	public static HashSet <String> property = new HashSet <String> () {{

@@ -22,6 +22,10 @@ public class Function {
     }
 
     public void execute(Graphics graphics, Expression[] arguments) {
+        if (arguments.length != initArgs.length) {
+            System.out.println("invalid args");
+            return;
+        }
         for (int i = 0; i < initArgs.length; i++) {
             block.assign(initArgs[i], arguments[i]);
         }

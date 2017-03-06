@@ -52,6 +52,9 @@ public class Parser {
 	 * @return
 	 */
 	public Block parse(String text) {
+
+		text += "\n";
+
 		// Reset the parser with the given text
 		reset(text);
 		
@@ -188,7 +191,8 @@ public class Parser {
 		}
 		ArrayList<Expression> args = new ArrayList<Expression>();
 		boolean doContinue = false;
-		for (String s : tokens) {
+		for (int i = index; i < tokens.length; i++) {
+			String s = tokens[i];
 			if (s.equals("\n")) doContinue = true;
 		}
 		while (doContinue && !peekNext("\n")) {
@@ -201,7 +205,8 @@ public class Parser {
 		String name = getNext();
 		ArrayList<SymbolTerminal> args = new ArrayList<SymbolTerminal>();
 		boolean doContinue = false;
-		for (String s : tokens) {
+		for (int i = index; i < tokens.length; i++) {
+			String s = tokens[i];
 			if (s.equals("\n")) doContinue = true;
 		}
 		while (doContinue && !peekNext("\n")) {

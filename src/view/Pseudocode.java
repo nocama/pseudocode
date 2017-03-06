@@ -83,8 +83,15 @@ public class Pseudocode extends JFrame {
 	 * Called whenever the text in the editor is updated.
 	 */
 	public void update(String text) {
-		parsed = parser.parse(text);
-		interpreter.interpret(parsed);
+		final String sText = text;
+		Thread runnerThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				parsed = parser.parse(sText);
+				interpreter.interpret(parsed);
+			}
+		}, "execution-thread");
+		runnerThread.start();
 	}
 	
 	public void updateText(String text) {
