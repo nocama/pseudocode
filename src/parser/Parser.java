@@ -166,7 +166,50 @@ public class Parser {
 			return parseInvert();
 		}
 
+		// Create a function
+		else if (getNext("to")) {
+			return parseFunctionInit();
+		}
+		// Call a function
+		else if (getNext("do", "run")) {
+			return parseFunctionCall();
+		}
+
 		return null;
+	}
+
+	private Instruction parseFunctionCall() {
+		if (!hasNext()) {
+			return null;
+		}
+		String name = getNext();
+		if (!hasNext()) {
+			return null;
+		}
+		ArrayList<Expression> args = new ArrayList<Expression>();
+		boolean doContinue = false;
+		for (String s : tokens) {
+			if (s.equals("\n")) doContinue = true;
+		}
+		while (doContinue && !peekNext("\n")) {
+			args.add(parseExpression());
+		}
+		return new FunctionCall(name, args.toArray(new Expression[args.size()]));
+	}
+
+	public Instruction parseFunctionInit() {
+		String name = getNext();
+		ArrayList<SymbolTerminal> args = new ArrayList<SymbolTerminal>();
+		boolean doContinue = false;
+		for (String s : tokens) {
+			if (s.equals("\n")) doContinue = true;
+		}
+		while (doContinue && !peekNext("\n")) {
+			args.add(parseSymbolTerminal());
+		}
+		skipNext("\n");
+		Block b = parseBlock(new Block(null));
+		return new FunctionInit(name, b, args.toArray(new SymbolTerminal[args.size()]));
 	}
 
 	public Instruction parseInvert() {

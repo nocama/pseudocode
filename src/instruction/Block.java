@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import expression.Expression;
+import expression.Function;
 import expression.SymbolTerminal;
 import view.Console;
 
@@ -22,6 +23,7 @@ public class Block extends Instruction {
 	// will reference the symbol table of the parent block.
 	private HashMap <String, Double> symbol;
 	private HashMap <String, String> stringSymbol;
+	private HashMap <String, Function> functions;
 	private Block parent;
 	
 	// The console output view.
@@ -49,14 +51,17 @@ public class Block extends Instruction {
 		instructions = new ArrayList <Instruction> ();
 		
 		// If this is the root block
-		if (parent == null)
-			symbol = new HashMap <String, Double> ();
-		
+		if (parent == null) {
+			symbol = new HashMap<String, Double>();
+			functions = new HashMap<String, Function>();
+		}
 		// Otherwise take the symbol table from the root block
-		else { 
+		else {
 			symbol = parent.symbol;
+			functions = parent.functions;
 			indentLevel = parent.indentLevel + 1;
 		}
+
 	}
 	
 	/**
@@ -277,7 +282,19 @@ public class Block extends Instruction {
 	public void assign(String symbol, double value) {
 		this.symbol.put(symbol, value);
 	}
-	
+
+	public Function getFunction (String name) {
+		return functions.get(name);
+	}
+
+	public void addFunction(String name, Function function) {
+		functions.put(name, function);
+	}
+
+	public String[] getFunctionNameList() {
+		return functions.keySet().toArray(new String[functions.size()]);
+	}
+
 	/**
 	 * Prints the given value to the console.
 	 */
