@@ -117,9 +117,6 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 		g.drawImage(front, 0, 0, null);
 	}
 
-	private boolean hasRendered = false;
-	private BufferedImage currentBuffer = null;
-
 	public void paint(Graphics g) {
 		if (firstReset) {
 			firstReset = false;
@@ -132,29 +129,16 @@ public class Interpreter extends JPanel implements MouseListener, MouseMotionLis
 			//g.drawImage(front, 0, 0, null);
 		}
 		if (block != null) {
-			if (!hasRendered) {
-				// Get references to current buffer to draw on, and static buffer with previously drawn frame.
-				currentBuffer = (frontBuffer) ? back : front;
-				BufferedImage staticBuffer = (frontBuffer) ? front : back;
+			// Get references to current buffer to draw on, and static buffer with previously drawn frame.
+			BufferedImage currentBuffer = (frontBuffer) ? back : front;
+			BufferedImage staticBuffer = (frontBuffer) ? front : back;
+			
+			currentBuffer.getGraphics().drawImage(staticBuffer, 0, 0, null);
 
-				currentBuffer.getGraphics().drawImage(staticBuffer, 0, 0, null);
+			block.execute(currentBuffer.getGraphics(), block);
+			g.drawImage(currentBuffer, 0, 0, null);
 
-				Thread t = new Thread(new Runnable() {
-					@Override
-					public void run() {
-						block.execute(currentBuffer.getGraphics(), block);
-						hasRendered = true;
-					}
-				}, "execution-thread");
-				t.run();
-			}
-
-			if (hasRendered) {
-				g.drawImage(currentBuffer, 0, 0, null);
-				hasRendered = false;
-			}
-
-			frontBuffer = ! frontBuffer;
+			frontBuffer = ! frontBuffer;			
 		}
 	}
 
