@@ -26,7 +26,7 @@ The steps of a parser
 - [x] Add polygons (`draw a polygon from a, b to c, d to e, f`)
 - [x] Formatting the editor
 - [x] Console for print output
-- [ ] Add polygons (`draw a polygon from a, b to c, d to e, f`)
+- [x] Add polygons (`draw a polygon from a, b to c, d to e, f`)
 - [ ] String interpolation (`print "the value of the variable is $variable and I am at $x, $y"`)
 - [ ] Draw an image from the web (`import "https://image.com/image.png" as xyz` ... `draw xyz at 300, 300`)
 - [ ] Ensure all files are commented
@@ -45,8 +45,9 @@ The steps of a parser
 
 ## Future todo list
 
+- [ ] Linkage between files and standard librarys
 - [ ] Lists
-- [ ] Functions
+- [x] Functions
 
 ```
 to draw a triangle at x, y,

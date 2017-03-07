@@ -177,8 +177,31 @@ public class Parser {
 		else if (getNext("do", "run")) {
 			return parseFunctionCall();
 		}
+		// Sleep
+		else if (getNext("sleep", "wait", "pause", "delay")) {
+			return parseSleep();
+		}
 
 		return null;
+	}
+
+	private Instruction parseSleep() {
+		skipNext("for");
+		Expression time;
+		if (!peekExpression()) {
+			time = new Expression(); // one second
+		} else {
+			time = parseExpression();
+		}
+		int unit = parseTimeUnit(); // Unit is multiplyed by time to make ms
+		return new Sleep(unit, time);
+	}
+
+	private int parseTimeUnit() {
+		if (getNext("ms", "milli", "millis", "milliseconds", "millisecond")) return 1;
+		else if (getNext("s", "secs", "sec", "second", "seconds"))  return 1000;
+		else if (getNext("min", "mins", "minute", "minutes")) return 60000;
+		return 1000;
 	}
 
 	private Instruction parseFunctionCall() {

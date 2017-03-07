@@ -27,6 +27,8 @@ public class Pseudocode extends JFrame {
 	
 	// Display constants
 	public static final int SIZE = 600;
+
+	public static Thread execution;
 	
 	// Editor and output panel reference.
 	Editor editor;
@@ -83,15 +85,8 @@ public class Pseudocode extends JFrame {
 	 * Called whenever the text in the editor is updated.
 	 */
 	public void update(String text) {
-		final String sText = text;
-		Thread runnerThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				parsed = parser.parse(sText);
-				interpreter.interpret(parsed);
-			}
-		}, "execution-thread");
-		runnerThread.start();
+		parsed = parser.parse(text);
+		interpreter.interpret(parsed);
 	}
 	
 	public void updateText(String text) {
