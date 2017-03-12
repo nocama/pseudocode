@@ -23,7 +23,10 @@ public class Pseudocode extends JFrame {
 	/**
 	 * Create an instance of this JFrame on execution.
 	 */
-	public static void main(String[] args) { new Pseudocode(); };
+	public static void main(String[] args) {
+		System.setProperty("apple.laf.useScreenMenuBar", "true");
+		new Pseudocode();
+	}
 	
 	// Display constants
 	public static final int SIZE = 600;
