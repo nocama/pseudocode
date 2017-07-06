@@ -1,0 +1,16 @@
+#######################################
+# Functions.pseudo example            #
+# Creates a bouncing ball             #
+#######################################
+
+# create function draw ball with arguments
+to drawBall a b
+	draw a big circle at a, b
+	
+to drawSmallBall a b
+	draw a small circle at a, b
+	
+# execute the function draw ball with arguments
+do drawBall 100 100
+
+run drawSmallBall 100 200

@@ -14,12 +14,12 @@ forever
 	
 	if x < r
 		set x to r
-		set dx to -1 * dx
-	
+		invert dx
+			
 	if x > width - r
 		set x to width - r
-		set dx to -1 * dx
-	
+		invert dx
+			
 	if y > height - r
 		set y to height - r
 		set dy to -0.95 * dy

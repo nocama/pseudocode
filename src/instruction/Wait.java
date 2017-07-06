@@ -3,6 +3,7 @@ package instruction;
 import java.awt.Graphics;
 
 import expression.Expression;
+import java.util.Date;
 
 public class Wait extends Instruction{
 	Expression time;
@@ -18,8 +19,14 @@ public class Wait extends Instruction{
 	
 	public void execute(Graphics graphics, Block algorithm) {
 		long time = (long) ((this.time != null) ? this.time.evaluate(algorithm) : 0);
-		
+		int times = (int) time;
+		try {
+			Thread.sleep(times);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
+
 
 	@Override
 	public String toString() {

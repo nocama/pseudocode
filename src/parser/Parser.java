@@ -111,7 +111,7 @@ public class Parser {
 	 * 
 	 * @return an Instruction object if one could be parsed, null otherwise
 	 */
-	public Instruction parseInstruction(Block block) {
+public Instruction parseInstruction(Block block) {
 		
 		// Function definition
 		if (getNext("to")) {
@@ -176,7 +176,8 @@ public class Parser {
 			}
 			return call;
 		}
-		
+
+
 		// Repeat instructions forever
 		else if (getNext("forever", "repeatedly", "always")) {
 			if (! atDelimiter()) {
@@ -258,7 +259,7 @@ public class Parser {
 	}
 
 	private Instruction parseWait(){
-		if(peekExpression()){
+		if(peekExpression()) {
 			return new Wait(parseExpression());
 		}
 		return null;
@@ -276,30 +277,30 @@ public class Parser {
 	private Instruction parseMath() {
 		if (getNext("add") && peekExpression()) {
 			Expression increment = parseExpression();
-			if (getNext("to") && peekExistingSymbolTerminal()) {
+			if (getNext("to") && peekExpression()) {
 				SymbolTerminal symbol = parseSymbolTerminal();
-				return new Assign(symbol, new Expression(symbol, Operator.Add, increment));
+				return new Operations(symbol, increment, "add");	
 			}
 		}
 		if (getNext("subtract") && peekExpression()) {
 			Expression decrement = parseExpression();
-			if (getNext("from") && peekExistingSymbolTerminal()) {
+			if (getNext("from") && peekExpression()) {
 				SymbolTerminal symbol = parseSymbolTerminal();
-				return new Assign(symbol, new Expression(symbol, Operator.Subtract, decrement));
+				return new Operations(symbol, decrement, "subtract");
 			}
 		}
-		if (getNext("multiply", "scale") && peekExistingSymbolTerminal()) {
+		if (getNext("multiply", "scale") && peekExpression()) {
 			SymbolTerminal symbol = parseSymbolTerminal();
 			if (getNext("by") && peekExpression()) {
 				Expression scale = parseExpression();
-				return new Assign(symbol, new Expression(symbol, Operator.Multiply, scale));
+				return new Operations(symbol, scale, "multiply" );
 			}
 		}
-		if (getNext("divide") && peekExistingSymbolTerminal()) {
+		if (getNext("divide") && peekExpression()) {
 			SymbolTerminal symbol = parseSymbolTerminal();
 			if (getNext("with", "by") && peekExpression()) {
 				Expression scale = parseExpression();
-				return new Assign(symbol, new Expression(symbol, Operator.Divide, scale));
+				return new Operations(symbol, scale, "divide");
 			}
 		}
 		return null;
@@ -308,7 +309,7 @@ public class Parser {
 	public Instruction parseInvert() {
 		SymbolTerminal symbol = parseSymbolTerminal();
 		if (symbol != null) {
-			return new Assign(symbol, new Expression(symbol, Operator.Multiply, new Terminal(-1)));
+			return new Operations(symbol, new Terminal(-1), "multiply");
 		}
 		return null;
 	}
@@ -383,10 +384,7 @@ public class Parser {
 						if(getNext(",") && peekExpression())
 							values.add(parseExpression());
 					}
-				}
-
-
-					
+				}		
 					return new Assign(symbol, values);
 			}
 		}
@@ -682,14 +680,15 @@ public class Parser {
 			if (getNext("||") || getNext("or")) return Operator.Or;
 
 			// Equality testing
-			if (getNext("==") || getNext("is")) return Operator.Equal;
-			if (getNext("!=") || getNext("is not")) return Operator.NotEqual;
+			if (getNext("==") || getNext("equals")) return Operator.Equal;
+			if (getNext("!=") || getNext("does not equal")) return Operator.NotEqual;
 	
 			// Comparison operators
-			if (getNext(">")  || getNext("greater than") || getNext("is greater than")) return Operator.GreaterThan;
-			if (getNext("<")  || getNext("less than") || getNext("is less than")) return Operator.LessThan;
 			if (getNext(">=") || getNext("greater than or equal to") || getNext("is greater than or equal to")) return Operator.GreaterThanOrEqual;
 			if (getNext("<=") || getNext("less than or equal to") || getNext("is less than or equal to")) return Operator.LessThanOrEqual;
+			if (getNext(">")  || getNext("greater than") || getNext("is greater than")) return Operator.GreaterThan;
+			if (getNext("<")  || getNext("less than") || getNext("is less than")) return Operator.LessThan;
+			
 		}
 		return null;
 	}
@@ -708,10 +707,11 @@ public class Parser {
 		else {
 			Expression value = parseTerminal();
 
-			if (peekNext(")"))
+			if (getNext(")"))
 				return value;
 
 			Operator op = parseOperator(logic);
+			
 			if (op != null)
 				return parseExpressionTail(value, op, logic);
 

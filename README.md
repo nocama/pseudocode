@@ -159,7 +159,7 @@ print x of 1
 You can change a value in a list
 
 ```
-set x of 1 to 5
+set x of 1 to 5 **changes all the values in the list**
 ```
 
 
@@ -251,7 +251,7 @@ You can compare numbers
 4 greater than or equal to 4 
 4 ≥ 4 (true)
 
-6 is less than or equal to 5 (false)
+6 less than or equal to 5 (false)
 6 ≤ 5 (true)
 ```
 
@@ -298,7 +298,7 @@ You can use if-else statements so that code can be run even if your condition is
 if x is less than y 
 	draw a green square at 50 50 
 else 
-	draw a blue sqaure at 100 100
+	draw a blue square at 100 100
 	
 if x > y 
 	draw an orange circle at 50 50 
@@ -331,7 +331,8 @@ You can print variables within text
 set x to 5
 print "The dog jumped over the quick brown fox by #x meters"
 
-set y to "pizza"
+**Strings do not work**
+set y to "pizza" 
 print "The dog ate a lot of #y"
 ```
 
@@ -350,7 +351,7 @@ print x of 1
 print "The dog jumped over the quick brown fox by #x:1 meters"
 ```
 
-### Waiting **Not Currently Working**
+### Waiting
 
 You can pause your program for a certain amount of time
 

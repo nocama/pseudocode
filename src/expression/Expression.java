@@ -41,7 +41,7 @@ public class Expression {
 	/**
 	 * Constructs a binary expression.
 	 * @param left - left subexpression of the binary expression
-	 * @param operator - the binary opeator
+	 * @param operator - the binary operator
 	 * @param right - the right subexpression of the binary expression
 	 */
 	public Expression(Expression left, Operator operator, Expression right) {

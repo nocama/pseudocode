@@ -1,11 +1,8 @@
 package instruction;
 
 import java.awt.Graphics;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import expression.Expression;
 import expression.SymbolTerminal;
@@ -73,6 +70,7 @@ public class Block extends Instruction {
 		
 		// Otherwise take the symbol table from the root block
 		else { 
+			this.parent = parent;
 			symbol = parent.symbol;
 			indentLevel = parent.indentLevel + 1;
 		}
@@ -281,14 +279,18 @@ public class Block extends Instruction {
 		return get(symbol.toString(), index, getScope(symbol.toString()));
 	}
 
-	public double get(String symbol, int index) { return get(symbol, index, getScope(symbol)); }
+	public double get(String symbol, int index) { 
+		return get(symbol, index, getScope(symbol)); 
+	}
 	
-	public double get(String symbol){ return get(symbol, 0, getScope(symbol)); }
+	public double get(String symbol){ 
+		return get(symbol, 0, getScope(symbol)); 
+	}
 	
 	/**
 	 * Returns an array of the entire list
 	 */
-	public ArrayList<Double> getList(String symbol){
+	public ArrayList<Double> getList(String symbol) {
 		ArrayList<Double> values = new ArrayList<Double>();
 		if(hasSymbol(symbol)){
 			for(int i=0; i < getScope(symbol).get(symbol).get("length");i++){
@@ -323,19 +325,30 @@ public class Block extends Instruction {
 	/**
 	 * Various methods that call the assign method below
 	 */
-	public void assign(String symbol, int value){
+	public void assign(String symbol, int value) {
 		assign(symbol, value, 0, null, currentScope(), Variable.Number);
 	}
-	public void assign(String symbol, Terminal value){
+	
+	/**
+	 * 
+	 * @param symbol
+	 * @param value
+	 */
+	public void assign(String symbol, Terminal value) {
 		assign(symbol, value.evaluate(this), 0, null, currentScope(), Variable.Number);
 	}
-	public void assign(String symbol, Expression value){
+	
+	
+	public void assign(String symbol, Expression value) {
 		assign(symbol, value.evaluate(this), 0, null, currentScope(), Variable.Number);
 	}
-	public void assign(SymbolTerminal symbol, String word, Variable type){
+	
+	
+	public void assign(SymbolTerminal symbol, String word, Variable type) {
 		assign(symbol.toString(), 0, -1, castString(word), currentScope(), type);
 	}
-	public void assign(SymbolTerminal symbol, Expression value, Expression index, Variable type){
+	
+	public void assign(SymbolTerminal symbol, Expression value, Expression index, Variable type) {
 		int i = -1;
 		if(index != null){
 			type = Variable.List;
@@ -343,6 +356,7 @@ public class Block extends Instruction {
 		}
 		assign(symbol.toString(), value.evaluate(this), i, null, currentScope(), type);
 	}
+	
 	public void assign(SymbolTerminal symbol, ArrayList<Expression> values, Variable type){
 		ArrayList<Double> nums = new ArrayList<Double>();
 		for(Expression i: values){
@@ -442,16 +456,16 @@ public class Block extends Instruction {
 	/**
 	 * Returns the scope of the given variable
 	 **/
-	public HashMap<String, HashMap<String, Double>> getScope(String symbol){
+	public HashMap<String, HashMap<String, Double>> getScope(String symbol) {
 		if (local.containsKey(symbol))
 			return local;
-		else if (hasSymbol(symbol)){
+		else if (hasSymbol(symbol)) {
 			return this.symbol;
 		}
 		return null;
 	}
 	
-	public HashMap<String, HashMap<String, Double>> currentScope(){
+	public HashMap<String, HashMap<String, Double>> currentScope() {
 		return symbol;
 	}
 	

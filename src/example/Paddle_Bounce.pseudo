@@ -1,25 +1,33 @@
-set x to 100
-set y to 100
+set x to 300
+set y to 300
+set r to 30
 set dx to 5
-set dy to 0
+set dy to 3
 
 forever
-	set background to white
-	draw a blue rectangle at mouse x, mouse y with width 100 and height 10
-	
-	draw a red circle at x, y
+	set the background to white
+	draw a red circle at x, y with radius r
+	draw a blue rectangle at mouse x, mouse y with width of 100 and height of 10
 	change x by dx
 	change y by dy
 	increment dy
 	
-	if y > height - 20
-		invert dy
+	if x < r
+		set x to r
+		set dx to -1 * dx
+		//invert dx
 	
-	if x > width - 20
-		invert dx
+	if x > width - r
+		set x to width - r
+		set dx to -1 * dx
+		//invert dx
 	
-	if x < 20
-		invert dx
+	if y > height - r
+		set y to height - r
+		set dy to -0.95 * dy
+		//multiply dy by -0.95
 	
-	if distance from x, y to mouse x, mouse y < 40
-		invert dy
+	if distance from x, y to mouse x, mouse y <40
+		set dy to -1 * dy
+		//invert dy
+	

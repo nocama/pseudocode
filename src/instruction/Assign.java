@@ -45,7 +45,7 @@ public class Assign extends Instruction {
 		this.symbol = symbol;
 		this.value = expression;
 		this.index = index;
-		type = Block.Variable.Number;
+		type = Block.Variable.List;
 	}
 	
 	public Assign(SymbolTerminal symbol, String word){
@@ -65,7 +65,7 @@ public class Assign extends Instruction {
 			break;
 		case Number:
 			int i = -1;
-			if(index != null){
+			if(index != null) {
 				i = (int) index.evaluate(block);
 				if(i > scope.get(symbol).get("length") || i < 0){
 					i = 0;

@@ -41,6 +41,16 @@ public class Constant {
 		add("else");
 		add("otherwise");
 		add("print");
+		add("add");
+		add("subtract");
+		add("multiply");
+		add("subtract");
+		add("is less than");
+		add("is greater than");
+		add("is equal to");
+		add("is not equal to");
+		add("is not");
+		add("is");
 	}};
 
 	// A set of reserved keywords
