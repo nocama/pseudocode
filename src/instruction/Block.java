@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import expression.Expression;
+import expression.Function;
+import expression.NullExpression;
 import expression.SymbolTerminal;
 import expression.Terminal;
 import view.Console;
@@ -523,5 +525,15 @@ public class Block extends Instruction {
 			word += c;
 		}
 		return word;
+	}
+
+	public void assign(SymbolTerminal s, NullExpression nullExpression) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addFunction(String name, Function f) {
+		// TODO Auto-generated method stub
+		
 	}
 }
